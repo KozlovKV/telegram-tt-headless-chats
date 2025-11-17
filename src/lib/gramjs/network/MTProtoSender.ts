@@ -412,6 +412,7 @@ export default class MTProtoSender {
    * @returns {RequestState}
    */
   send<T extends CallableRequest>(request: T, abortSignal?: AbortSignal, isLongPoll = false) {
+    // console.warn('sending to MTProto', request, abortSignal, isLongPoll);
     const state = new RequestState<T>(request, abortSignal);
     if (!isLongPoll) {
       this.logWithIndex.debug(`Send ${request.className}`);
@@ -419,6 +420,7 @@ export default class MTProtoSender {
     } else {
       this._sendQueueLongPoll.append(state);
     }
+    // console.warn('Requrest created', state);
     return state.promise;
   }
 

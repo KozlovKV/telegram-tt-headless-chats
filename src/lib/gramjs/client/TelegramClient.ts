@@ -116,7 +116,7 @@ export type SizeType = typeof sizeTypes[number];
 
 class TelegramClient {
   static DEFAULT_OPTIONS: Partial<TelegramClientParams> = {
-    connection: ConnectionTCPObfuscated,
+    connection: ConnectionTCPObfuscated, // Может быть надо заменить
     fallbackConnection: HttpConnection,
     useIPV6: false,
     timeout: 10,
@@ -287,7 +287,9 @@ class TelegramClient {
      * @returns {Promise<void>}
      */
   async connect() {
-    await this._initSession();
+    console.warn('connecting');
+    await this._initSession(); // СЕССИЯ НЕ ПОЛУЧАЕТ КЛЮЧ
+    console.warn('sesstion inited', this.session);
 
     if (this._sender === undefined) {
       // only init sender once to avoid multiple loops.
@@ -307,6 +309,7 @@ class TelegramClient {
         getShouldDebugExportedSenders: this.getShouldDebugExportedSenders.bind(this),
         isMainSender: true,
       });
+      console.warn('Sender inited', this._sender);
     }
 
     const connection = new this._connection({
@@ -323,6 +326,7 @@ class TelegramClient {
       loggers: this._log,
       isTestServer: this.session.isTestServer,
     });
+    console.warn('Connection created', connection);
 
     const newConnection = await this._sender.connect(connection, false, fallbackConnection);
     if (!newConnection) {
@@ -331,14 +335,24 @@ class TelegramClient {
         this._updateLoop();
         this._loopStarted = true;
       }
+      console.warn('Connection already established');
       return;
     }
 
+    console.warn('setting auth key');
     this.session.setAuthKey(this._sender.authKey);
+    console.warn('set auth key', this.session);
     // `_initWith` is used to announce our API layer to the server
-    await this._sender.send(this._initWith(
-      new Api.help.GetConfig(),
-    ));
+    try {
+      const res = await this._sender.send(this._initWith(
+        new Api.help.GetConfig(),
+      ));
+      console.warn('send response promise', res);
+    } catch (err) {
+      console.error('failed to send to MTProto', err);
+      // throw new Error('fucking shit');
+    }
+    console.warn('Set config');
 
     if (!this._loopStarted) {
       this._updateLoop();
@@ -350,6 +364,7 @@ class TelegramClient {
     // Prepare file connection on current DC to speed up initial media loading
     const mediaSender = await this._borrowExportedSender(this.session.dcId, false, undefined, 0, this.isPremium);
     if (mediaSender) this.releaseExportedSender(mediaSender);
+    console.warn('Client connection finished');
   }
 
   async _initSession() {
@@ -1253,6 +1268,8 @@ class TelegramClient {
     onConnected?.();
 
     this.loadConfig();
+
+    console.warn('config loaded', this);
 
     if (await checkAuthorization(this, authParams.shouldThrowIfUnauthorized)) {
       return;

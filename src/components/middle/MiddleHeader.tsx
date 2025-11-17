@@ -320,7 +320,7 @@ const MiddleHeader: FC<OwnProps & StateProps> = ({
   function renderBackButton(asClose = false, withUnreadCounter = false) {
     return (
       <div className="back-button">
-        <Button
+        {/* <Button
           round
           size="smaller"
           color="translucent"
@@ -329,7 +329,7 @@ const MiddleHeader: FC<OwnProps & StateProps> = ({
         >
           <div className={buildClassName('animated-close-icon', !asClose && 'state-back')} />
         </Button>
-        {withUnreadCounter && <UnreadCounter />}
+        {withUnreadCounter && <UnreadCounter />} */}
       </div>
     );
   }

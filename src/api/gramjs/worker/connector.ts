@@ -91,6 +91,7 @@ export function initApi(onUpdate: OnApiUpdate, initialArgs: ApiInitialArgs) {
       // eslint-disable-next-line no-console
       console.log('>>> START LOAD WORKER');
     }
+    // console.warn(initialArgs);
 
     const params = new URLSearchParams();
     if (ACCOUNT_SLOT) {
@@ -110,7 +111,8 @@ export function initApi(onUpdate: OnApiUpdate, initialArgs: ApiInitialArgs) {
   return makeRequest({
     type: 'initApi',
     args: [initialArgs, savedLocalDb],
-  }).then(() => {
+  }).then((_res) => {
+    // console.warn('success in connector for initApi', _res);
     isInited = true;
 
     apiRequestsQueue.forEach((request) => {
@@ -126,6 +128,8 @@ export function initApi(onUpdate: OnApiUpdate, initialArgs: ApiInitialArgs) {
         .catch(request.deferred.reject);
     });
     localApiRequestsQueue = [];
+  }).catch((err) => {
+    console.error(err);
   });
 }
 
@@ -377,6 +381,7 @@ function makeRequestToMaster(message: {
 }
 
 function makeRequest(message: OriginPayload) {
+  console.warn(message);
   const messageId = generateUniqueId();
   const payload: OriginPayload = {
     messageId,
