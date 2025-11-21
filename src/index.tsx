@@ -31,6 +31,7 @@ import App from './components/App';
 
 import './assets/fonts/roboto.css';
 import './styles/index.scss';
+import { invoke } from '@tauri-apps/api/core';
 
 if (STRICTERDOM_ENABLED) {
   enableStrict();
@@ -48,6 +49,9 @@ async function init() {
     // eslint-disable-next-line no-console
     console.log('>>> INIT');
   }
+
+  invoke('send_update', { updateLabel: 'test' }); // TODO: Понять, куда это впихнуть
+
 
   if (!(window as any).isCompatTestPassed) return;
 

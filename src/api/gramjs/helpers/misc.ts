@@ -8,6 +8,7 @@ import {
   DAY, getDays, getHours, getMinutes, HOUR, MINUTE,
 } from '../../../util/dates/units';
 import { getApiChatIdFromMtpPeer } from '../apiBuilders/peers';
+import { invoke } from '@tauri-apps/api/core';
 
 const LOG_BACKGROUND = '#111111DD';
 const LOG_PREFIX_COLOR = '#E4D00A';

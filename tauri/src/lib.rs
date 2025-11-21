@@ -1,7 +1,7 @@
-use axum::extract::ws::WebSocket;
 use log::LevelFilter;
 use std::collections::HashMap;
 use std::sync::{LazyLock, Mutex};
+use tokio::sync::broadcast::{channel, Sender, Receiver};
 
 use serde_json::json;
 use tauri::{Emitter, LogicalPosition, Manager, async_runtime, webview::DownloadEvent};
@@ -9,7 +9,7 @@ use url::Url;
 use uuid::Uuid;
 
 mod server_api;
-use server_api::start_server;
+use server_api::{start_server, send_update};
 
 mod deeplink;
 use deeplink::Deeplink;
@@ -25,15 +25,19 @@ mod mac;
 pub struct AppStateStruct {
   pub notification_count: i32,
   pub is_muted: bool,
-  pub websokcet: Mutex<Option<WebSocket>>,
+  pub updates_tx: Sender<String>,
+  pub updates_rx: Receiver<String>,
 }
 
 impl Default for AppStateStruct {
   fn default() -> Self {
+    let (updates_tx, updates_rx) = channel(10240);
+
     Self {
       notification_count: 0,
       is_muted: false,
-      websokcet: Mutex::new(None),
+      updates_tx,
+      updates_rx
     }
   }
 }
@@ -167,7 +171,8 @@ pub fn run() {
 
   let app = app.setup(|app| {
     // Manage app state
-    app.manage(AppState::new(AppStateStruct::default()));
+    let app_state = AppStateStruct::default();
+    app.manage(AppState::new(app_state));
 
     let _main_window = open_new_window(app.handle().clone(), BASE_URL.to_string())
       .expect("Failed to open main window");
@@ -185,8 +190,9 @@ pub fn run() {
 
     crate::tray::TrayManager::init(app.handle().clone())?;
 
+    let app_handle = app.handle().clone();
     async_runtime::spawn(async move {
-      if let Err(err) = start_server().await {
+      if let Err(err) = start_server(app_handle).await {
         log::error!("Failed to start external server: {err:?}");
       }
     });
@@ -200,7 +206,8 @@ pub fn run() {
     set_window_title,
     open_new_window_cmd,
     save_current_url,
-    set_menu_translations
+    set_menu_translations,
+    send_update
   ]);
 
   app
