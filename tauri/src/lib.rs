@@ -1,10 +1,15 @@
+use axum::extract::ws::WebSocket;
+use log::LevelFilter;
 use std::collections::HashMap;
 use std::sync::{LazyLock, Mutex};
 
 use serde_json::json;
-use tauri::{Emitter, LogicalPosition, Manager, webview::DownloadEvent};
+use tauri::{Emitter, LogicalPosition, Manager, async_runtime, webview::DownloadEvent};
 use url::Url;
 use uuid::Uuid;
+
+mod server_api;
+use server_api::start_server;
 
 mod deeplink;
 use deeplink::Deeplink;
@@ -20,6 +25,7 @@ mod mac;
 pub struct AppStateStruct {
   pub notification_count: i32,
   pub is_muted: bool,
+  pub websokcet: Mutex<Option<WebSocket>>,
 }
 
 impl Default for AppStateStruct {
@@ -27,21 +33,24 @@ impl Default for AppStateStruct {
     Self {
       notification_count: 0,
       is_muted: false,
+      websokcet: Mutex::new(None),
     }
   }
 }
 
 pub type AppState = Mutex<AppStateStruct>;
 
-pub const TRAFFIC_LIGHT_POSITION_OVERLAY_LEGACY: LogicalPosition<f64> = LogicalPosition::new(12.0, 26.0);
-pub const TRAFFIC_LIGHT_POSITION_OVERLAY_26: LogicalPosition<f64> = LogicalPosition::new(12.0, 30.0);
+pub const TRAFFIC_LIGHT_POSITION_OVERLAY_LEGACY: LogicalPosition<f64> =
+  LogicalPosition::new(12.0, 26.0);
+pub const TRAFFIC_LIGHT_POSITION_OVERLAY_26: LogicalPosition<f64> =
+  LogicalPosition::new(12.0, 30.0);
 pub const TRAFFIC_LIGHT_POSITION_DEFAULT: LogicalPosition<f64> = LogicalPosition::new(12.0, 12.0);
 
 pub static TRAFFIC_LIGHT_POSITION_OVERLAY: LazyLock<LogicalPosition<f64>> = LazyLock::new(|| {
   if let tauri_plugin_os::Version::Semantic(major, _, _) = tauri_plugin_os::version() {
-      if major >= 26 {
-          return TRAFFIC_LIGHT_POSITION_OVERLAY_26;
-      }
+    if major >= 26 {
+      return TRAFFIC_LIGHT_POSITION_OVERLAY_26;
+    }
   }
   TRAFFIC_LIGHT_POSITION_OVERLAY_LEGACY
 });
@@ -104,7 +113,11 @@ pub fn run() {
     .plugin(tauri_plugin_fs::init())
     .plugin(tauri_plugin_shell::init())
     .plugin(tauri_plugin_notification::init())
-    .plugin(tauri_plugin_log::Builder::default().build())
+    .plugin(
+      tauri_plugin_log::Builder::default()
+        .level(LevelFilter::Info)
+        .build(),
+    )
     .plugin(tauri_plugin_window_state::Builder::default().build())
     .plugin(tauri_plugin_deep_link::init())
     .plugin(tauri_plugin_process::init());
@@ -171,6 +184,12 @@ pub fn run() {
     }
 
     crate::tray::TrayManager::init(app.handle().clone())?;
+
+    async_runtime::spawn(async move {
+      if let Err(err) = start_server().await {
+        log::error!("Failed to start external server: {err:?}");
+      }
+    });
 
     Ok(())
   });
