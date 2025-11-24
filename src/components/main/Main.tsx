@@ -549,6 +549,7 @@ const Main = ({
 
   return (
     <div ref={containerRef} id="Main" className={className}>
+      {/* Убрать следующий компонент чтобы не было основного меню */}
       <LeftColumn ref={leftColumnRef} />
       <MiddleColumn leftColumnRef={leftColumnRef} isMobile={isMobile} />
       <RightColumn isMobile={isMobile} />

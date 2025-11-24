@@ -1,10 +1,15 @@
+use log::LevelFilter;
 use std::collections::HashMap;
 use std::sync::{LazyLock, Mutex};
+use tokio::sync::broadcast::{channel, Sender, Receiver};
 
 use serde_json::json;
-use tauri::{Emitter, LogicalPosition, Manager, webview::DownloadEvent};
+use tauri::{Emitter, LogicalPosition, Manager, async_runtime, webview::DownloadEvent};
 use url::Url;
 use uuid::Uuid;
+
+mod server_api;
+use server_api::{start_server, send_update};
 
 mod deeplink;
 use deeplink::Deeplink;
@@ -20,28 +25,36 @@ mod mac;
 pub struct AppStateStruct {
   pub notification_count: i32,
   pub is_muted: bool,
+  pub updates_tx: Sender<String>,
+  pub updates_rx: Receiver<String>,
 }
 
 impl Default for AppStateStruct {
   fn default() -> Self {
+    let (updates_tx, updates_rx) = channel(10240);
+
     Self {
       notification_count: 0,
       is_muted: false,
+      updates_tx,
+      updates_rx
     }
   }
 }
 
 pub type AppState = Mutex<AppStateStruct>;
 
-pub const TRAFFIC_LIGHT_POSITION_OVERLAY_LEGACY: LogicalPosition<f64> = LogicalPosition::new(12.0, 26.0);
-pub const TRAFFIC_LIGHT_POSITION_OVERLAY_26: LogicalPosition<f64> = LogicalPosition::new(12.0, 30.0);
+pub const TRAFFIC_LIGHT_POSITION_OVERLAY_LEGACY: LogicalPosition<f64> =
+  LogicalPosition::new(12.0, 26.0);
+pub const TRAFFIC_LIGHT_POSITION_OVERLAY_26: LogicalPosition<f64> =
+  LogicalPosition::new(12.0, 30.0);
 pub const TRAFFIC_LIGHT_POSITION_DEFAULT: LogicalPosition<f64> = LogicalPosition::new(12.0, 12.0);
 
 pub static TRAFFIC_LIGHT_POSITION_OVERLAY: LazyLock<LogicalPosition<f64>> = LazyLock::new(|| {
   if let tauri_plugin_os::Version::Semantic(major, _, _) = tauri_plugin_os::version() {
-      if major >= 26 {
-          return TRAFFIC_LIGHT_POSITION_OVERLAY_26;
-      }
+    if major >= 26 {
+      return TRAFFIC_LIGHT_POSITION_OVERLAY_26;
+    }
   }
   TRAFFIC_LIGHT_POSITION_OVERLAY_LEGACY
 });
@@ -104,7 +117,11 @@ pub fn run() {
     .plugin(tauri_plugin_fs::init())
     .plugin(tauri_plugin_shell::init())
     .plugin(tauri_plugin_notification::init())
-    .plugin(tauri_plugin_log::Builder::default().build())
+    .plugin(
+      tauri_plugin_log::Builder::default()
+        .level(LevelFilter::Info)
+        .build(),
+    )
     .plugin(tauri_plugin_window_state::Builder::default().build())
     .plugin(tauri_plugin_deep_link::init())
     .plugin(tauri_plugin_process::init());
@@ -154,7 +171,8 @@ pub fn run() {
 
   let app = app.setup(|app| {
     // Manage app state
-    app.manage(AppState::new(AppStateStruct::default()));
+    let app_state = AppStateStruct::default();
+    app.manage(AppState::new(app_state));
 
     let _main_window = open_new_window(app.handle().clone(), BASE_URL.to_string())
       .expect("Failed to open main window");
@@ -172,6 +190,13 @@ pub fn run() {
 
     crate::tray::TrayManager::init(app.handle().clone())?;
 
+    let app_handle = app.handle().clone();
+    async_runtime::spawn(async move {
+      if let Err(err) = start_server(app_handle).await {
+        log::error!("Failed to start external server: {err:?}");
+      }
+    });
+
     Ok(())
   });
 
@@ -181,7 +206,8 @@ pub fn run() {
     set_window_title,
     open_new_window_cmd,
     save_current_url,
-    set_menu_translations
+    set_menu_translations,
+    send_update
   ]);
 
   app
@@ -303,10 +329,12 @@ pub(crate) fn open_new_window(
   )
   .additional_browser_args("--autoplay-policy=no-user-gesture-required")
   .fullscreen(false)
-  .resizable(true)
+  .resizable(false)
   .title(DEFAULT_WINDOW_TITLE)
   .inner_size(WINDOW_WIDTH, WINDOW_HEIGHT)
-  .min_inner_size(WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT)
+  .decorations(false)
+  .always_on_top(true)
+  // .min_inner_size(WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT)
   .disable_drag_drop_handler() // Required for Drag & Drop on Windows
   .initialization_script(&format!(
     "window.tauri = {{ version: '{}' }};",
@@ -372,6 +400,8 @@ pub(crate) fn open_new_window(
       );
     }
   }
+
+  window.hide()?;
 
   Ok(window)
 }

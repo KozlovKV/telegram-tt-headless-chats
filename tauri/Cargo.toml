@@ -32,6 +32,8 @@ image      = "0.25.8"
 imageproc  = "0.25.0"
 ab_glyph   = "0.2.32"
 tauri-plugin-os = "2.3.1"
+tokio = "1.48.0"
+axum = { version = "0.8.7", features = ["ws"] }
 
 [target."cfg(any(target_os = \"macos\", windows, target_os = \"linux\"))".dependencies]
 tauri-plugin-single-instance = { version = "2.3.4", features = ["deep-link"] }

@@ -62,6 +62,8 @@ onmessage = ({ data }: OriginMessageEvent) => {
               response: true,
             });
           }
+        }).catch((err) => {
+          console.error('init api error', err);
         });
         break;
       }
@@ -141,6 +143,7 @@ onmessage = ({ data }: OriginMessageEvent) => {
         if (payload.isEnabled) {
           enableDebugLog();
         } else {
+          // enableDebugLog();
           disableDebugLog();
         }
       }

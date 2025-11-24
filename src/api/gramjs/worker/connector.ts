@@ -1,3 +1,5 @@
+import { invoke } from '@tauri-apps/api/core';
+
 import type { Api } from '../../../lib/gramjs';
 import type { TypedBroadcastChannel } from '../../../util/browser/multitab';
 import type { ApiInitialArgs, ApiOnProgress, OnApiUpdate } from '../../types';
@@ -101,6 +103,9 @@ export function initApi(onUpdate: OnApiUpdate, initialArgs: ApiInitialArgs) {
       name: params.toString(),
     });
     subscribeToWorker(onUpdate);
+    subscribeToWorker((apiUpdate) => {
+      invoke('send_update', { updateLabel: apiUpdate['@type'] });
+    });
 
     if (initialArgs.platform === 'iOS' || (initialArgs.platform === 'macOS' && IS_TAURI)) {
       setupHealthCheck();
@@ -110,7 +115,7 @@ export function initApi(onUpdate: OnApiUpdate, initialArgs: ApiInitialArgs) {
   return makeRequest({
     type: 'initApi',
     args: [initialArgs, savedLocalDb],
-  }).then(() => {
+  }).then((_res) => {
     isInited = true;
 
     apiRequestsQueue.forEach((request) => {
@@ -126,6 +131,9 @@ export function initApi(onUpdate: OnApiUpdate, initialArgs: ApiInitialArgs) {
         .catch(request.deferred.reject);
     });
     localApiRequestsQueue = [];
+  }).catch((err) => {
+    // eslint-disable-next-line no-console
+    console.error(err);
   });
 }
 
@@ -202,6 +210,7 @@ export function callApiLocal<T extends keyof Methods>(
   return promise as EnsurePromise<MethodResponse<T>>;
 }
 
+// TODO: Здесь надо будет делать запросы
 export function callApi<T extends keyof Methods>(fnName: T, ...args: MethodArgs<T>): EnsurePromise<MethodResponse<T>> {
   if (!isInited && isMasterTab) {
     if (NO_QUEUE_BEFORE_INIT.has(fnName)) {
