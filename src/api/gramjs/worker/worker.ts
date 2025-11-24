@@ -54,9 +54,7 @@ onmessage = ({ data }: OriginMessageEvent) => {
     switch (payload.type) {
       case 'initApi': {
         const { messageId, args } = payload;
-        // console.warn('init api payload', payload);
         initApi(onUpdate, args[0], args[1]).then(() => {
-          // console.warn('initApi success', args);
           if (messageId) {
             sendToOrigin({
               type: 'methodResponse',

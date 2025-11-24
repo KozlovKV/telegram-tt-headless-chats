@@ -329,10 +329,12 @@ pub(crate) fn open_new_window(
   )
   .additional_browser_args("--autoplay-policy=no-user-gesture-required")
   .fullscreen(false)
-  .resizable(true)
+  .resizable(false)
   .title(DEFAULT_WINDOW_TITLE)
   .inner_size(WINDOW_WIDTH, WINDOW_HEIGHT)
-  .min_inner_size(WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT)
+  .decorations(false)
+  .always_on_top(true)
+  // .min_inner_size(WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT)
   .disable_drag_drop_handler() // Required for Drag & Drop on Windows
   .initialization_script(&format!(
     "window.tauri = {{ version: '{}' }};",
@@ -398,6 +400,8 @@ pub(crate) fn open_new_window(
       );
     }
   }
+
+  window.hide()?;
 
   Ok(window)
 }

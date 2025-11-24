@@ -112,7 +112,6 @@ export async function init(initialArgs: ApiInitialArgs, onConnected?: NoneToVoid
       isTestServerRequested,
     } as any,
   );
-  // console.warn('got client', client);
 
   client.addEventHandler(handleGramJsUpdate, gramJsUpdateEventBuilder);
 
@@ -127,7 +126,6 @@ export async function init(initialArgs: ApiInitialArgs, onConnected?: NoneToVoid
 
     try {
       client.setPingCallback(getDifference);
-      // console.warn('set ping callback');
       await client.start({
         phoneNumber: onRequestPhoneNumber,
         phoneCode: onRequestCode,
