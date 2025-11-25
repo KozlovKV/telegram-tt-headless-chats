@@ -321,7 +321,8 @@ pub(crate) fn open_new_window(
   app: tauri::AppHandle,
   url: String,
 ) -> Result<tauri::WebviewWindow, tauri::Error> {
-  let window_label = Uuid::new_v4().to_string();
+  // let window_label = Uuid::new_v4().to_string();
+  let window_label = String::from("main");
   let new_window_builder = tauri::WebviewWindowBuilder::new(
     &app,
     window_label.clone(),

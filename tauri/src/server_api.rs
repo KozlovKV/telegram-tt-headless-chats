@@ -1,13 +1,14 @@
 use axum::{
   Router,
   extract::{
-    State as AxumState,
+    Json, State as AxumState,
     ws::{WebSocket, WebSocketUpgrade},
   },
   response::Response,
-  routing::{any, get},
+  routing::{any, get, post},
 };
-use tauri::{AppHandle, Manager, State as TauriState};
+use serde::{Deserialize, Serialize};
+use tauri::{AppHandle, Manager, PhysicalPosition, PhysicalSize, State as TauriState};
 use tokio::sync::broadcast::Receiver;
 
 use crate::AppState;
@@ -55,9 +56,86 @@ pub async fn send_update(
   Ok(())
 }
 
+async fn show_window(AxumState(app_handle): AxumState<AppHandle>) -> Result<(), String> {
+  log::info!("Show window request");
+  let window = app_handle.get_window("main");
+  if window.is_none() {
+    let message = String::from("Failed to get main window");
+    log::error!("{message}");
+    return Err(message);
+  }
+  let window = window.unwrap();
+  window.show().map_err(|err| {
+    let message = format!("Failed to show window: {err:?}");
+    log::error!("{message}");
+    message
+  })?;
+  log::info!("Window shown");
+  Ok(())
+}
+
+async fn hide_window(AxumState(app_handle): AxumState<AppHandle>) -> Result<(), String> {
+  log::info!("Hide window request");
+  let window = app_handle.get_window("main");
+  if window.is_none() {
+    let message = String::from("Failed to get main window");
+    log::error!("{message}");
+    return Err(message);
+  }
+  let window = window.unwrap();
+  window.hide().map_err(|err| {
+    let message = format!("Failed to hide window: {err:?}");
+    log::error!("{message}");
+    message
+  })?;
+  log::info!("Window hidden");
+  Ok(())
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct WindowLocation {
+  x: u32,
+  y: u32,
+  width: u32,
+  height: u32,
+}
+
+async fn locate_window(
+  AxumState(app_handle): AxumState<AppHandle>,
+  Json(location): Json<WindowLocation>,
+) -> Result<(), String> {
+  log::info!("Locate window request to {location:?}");
+  let window = app_handle.get_window("main");
+  if window.is_none() {
+    let message = String::from("Failed to get main window");
+    log::error!("{message}");
+    return Err(message);
+  }
+  let window = window.unwrap();
+  window
+    .set_position(PhysicalPosition::new(location.x, location.y))
+    .map_err(|err| {
+      let message = format!("Failed to set window position: {err:?}");
+      log::error!("{message}");
+      message
+    })?;
+  log::info!("Position set");
+  window
+    .set_size(PhysicalSize::new(location.width, location.height))
+    .map_err(|err| {
+      let message = format!("Failed to set window size: {err:?}");
+      log::error!("{message}");
+      message
+    })?;
+  log::info!("Size set");
+  Ok(())
+}
+
 pub async fn start_server(app_handle: AppHandle) -> Result<(), Box<dyn std::error::Error>> {
   let app = Router::new()
-    .route("/", get(|| async { "Hello, World!" }))
+    .route("/window/show", post(show_window))
+    .route("/window/hide", post(hide_window))
+    .route("/window/locate", post(locate_window))
     .route("/ws", any(handler))
     .with_state(app_handle);
 
