@@ -11,9 +11,15 @@ import { DEBUG, IGNORE_UNHANDLED_ERRORS } from '../../../config';
 import { IS_TAURI } from '../../../util/browser/globalEnvironment';
 import { logDebugMessage } from '../../../util/debugConsole';
 import Deferred from '../../../util/Deferred';
-import { getCurrentTabId, subscribeToMasterChange } from '../../../util/establishMultitabRole';
+import {
+  getCurrentTabId,
+  subscribeToMasterChange,
+} from '../../../util/establishMultitabRole';
 import generateUniqueId from '../../../util/generateUniqueId';
-import { ACCOUNT_SLOT, DATA_BROADCAST_CHANNEL_NAME } from '../../../util/multiaccount';
+import {
+  ACCOUNT_SLOT,
+  DATA_BROADCAST_CHANNEL_NAME,
+} from '../../../util/multiaccount';
 import { pause, throttleWithTickEnd } from '../../../util/schedulers';
 
 type RequestState = {
@@ -53,7 +59,9 @@ subscribeToMasterChange((isMasterTabNew) => {
   isMasterTab = isMasterTabNew;
 });
 
-const channel = new BroadcastChannel(DATA_BROADCAST_CHANNEL_NAME) as TypedBroadcastChannel;
+const channel = new BroadcastChannel(
+  DATA_BROADCAST_CHANNEL_NAME,
+) as TypedBroadcastChannel;
 
 const postMessagesOnTickEnd = throttleWithTickEnd(() => {
   const payloads = pendingPayloads;
@@ -76,8 +84,13 @@ export function initApiOnMasterTab(initialArgs: ApiInitialArgs) {
 
 let updateCallback: OnApiUpdate;
 
-let localApiRequestsQueue: { fnName: any; args: any; deferred: Deferred<any> }[] = [];
-let apiRequestsQueue: { fnName: any; args: any; deferred: Deferred<any> }[] = [];
+let localApiRequestsQueue: {
+  fnName: any;
+  args: any;
+  deferred: Deferred<any>;
+}[] = [];
+let apiRequestsQueue: { fnName: any; args: any; deferred: Deferred<any> }[] =
+  [];
 let isInited = false;
 
 export function initApi(onUpdate: OnApiUpdate, initialArgs: ApiInitialArgs) {
@@ -104,10 +117,15 @@ export function initApi(onUpdate: OnApiUpdate, initialArgs: ApiInitialArgs) {
     });
     subscribeToWorker(onUpdate);
     subscribeToWorker((apiUpdate) => {
-      invoke('send_update', { updateLabel: apiUpdate['@type'] });
+      invoke('send_update', {
+        update: { label: apiUpdate['@type'], body: '' },
+      });
     });
 
-    if (initialArgs.platform === 'iOS' || (initialArgs.platform === 'macOS' && IS_TAURI)) {
+    if (
+      initialArgs.platform === 'iOS' ||
+      (initialArgs.platform === 'macOS' && IS_TAURI)
+    ) {
       setupHealthCheck();
     }
   }
@@ -115,26 +133,28 @@ export function initApi(onUpdate: OnApiUpdate, initialArgs: ApiInitialArgs) {
   return makeRequest({
     type: 'initApi',
     args: [initialArgs, savedLocalDb],
-  }).then((_res) => {
-    isInited = true;
+  })
+    .then((_res) => {
+      isInited = true;
 
-    apiRequestsQueue.forEach((request) => {
-      callApi(request.fnName, ...request.args)
-        .then(request.deferred.resolve)
-        .catch(request.deferred.reject);
-    });
-    apiRequestsQueue = [];
+      apiRequestsQueue.forEach((request) => {
+        callApi(request.fnName, ...request.args)
+          .then(request.deferred.resolve)
+          .catch(request.deferred.reject);
+      });
+      apiRequestsQueue = [];
 
-    localApiRequestsQueue.forEach((request) => {
-      callApiLocal(request.fnName, ...request.args)
-        .then(request.deferred.resolve)
-        .catch(request.deferred.reject);
+      localApiRequestsQueue.forEach((request) => {
+        callApiLocal(request.fnName, ...request.args)
+          .then(request.deferred.resolve)
+          .catch(request.deferred.reject);
+      });
+      localApiRequestsQueue = [];
+    })
+    .catch((err) => {
+      // eslint-disable-next-line no-console
+      console.error(err);
     });
-    localApiRequestsQueue = [];
-  }).catch((err) => {
-    // eslint-disable-next-line no-console
-    console.error(err);
-  });
 }
 
 export function updateLocalDb(name: keyof LocalDb, prop: string, value: any) {
@@ -165,7 +185,8 @@ export function setShouldEnableDebugLog(value: boolean) {
  * Mostly needed to disconnect worker when re-electing master
  */
 export function callApiLocal<T extends keyof Methods>(
-  fnName: T, ...args: MethodArgs<T>
+  fnName: T,
+  ...args: MethodArgs<T>
 ): EnsurePromise<MethodResponse<T>> {
   if (!isInited) {
     if (NO_QUEUE_BEFORE_INIT.has(fnName)) {
@@ -189,16 +210,17 @@ export function callApiLocal<T extends keyof Methods>(
     (async () => {
       try {
         type ForbiddenTypes =
-          Api.VirtualClass<any>
+          | Api.VirtualClass<any>
           | (Api.VirtualClass<any> | undefined)[];
         type ForbiddenResponses =
-          ForbiddenTypes
+          | ForbiddenTypes
           | (AnyLiteral & Record<string, ForbiddenTypes>);
 
         // Unwrap all chained promises
         const response = await promise;
         // Make sure responses do not include `VirtualClass` instances
-        const allowedResponse: Exclude<typeof response, ForbiddenResponses> = response;
+        const allowedResponse: Exclude<typeof response, ForbiddenResponses> =
+          response;
         // Suppress "unused variable" constraint
         void allowedResponse;
       } catch (err) {
@@ -211,7 +233,10 @@ export function callApiLocal<T extends keyof Methods>(
 }
 
 // TODO: Здесь надо будет делать запросы
-export function callApi<T extends keyof Methods>(fnName: T, ...args: MethodArgs<T>): EnsurePromise<MethodResponse<T>> {
+export function callApi<T extends keyof Methods>(
+  fnName: T,
+  ...args: MethodArgs<T>
+): EnsurePromise<MethodResponse<T>> {
   if (!isInited && isMasterTab) {
     if (NO_QUEUE_BEFORE_INIT.has(fnName)) {
       return Promise.resolve(undefined) as EnsurePromise<MethodResponse<T>>;
@@ -223,30 +248,33 @@ export function callApi<T extends keyof Methods>(fnName: T, ...args: MethodArgs<
     return deferred.promise as EnsurePromise<MethodResponse<T>>;
   }
 
-  const promise = isMasterTab ? makeRequest({
-    type: 'callMethod',
-    name: fnName,
-    args,
-  }) : makeRequestToMaster({
-    name: fnName,
-    args,
-  });
+  const promise = isMasterTab
+    ? makeRequest({
+      type: 'callMethod',
+      name: fnName,
+      args,
+    })
+    : makeRequestToMaster({
+      name: fnName,
+      args,
+    });
 
   // Some TypeScript magic to make sure `VirtualClass` is never returned from any method
   if (DEBUG) {
     (async () => {
       try {
         type ForbiddenTypes =
-          Api.VirtualClass<any>
+          | Api.VirtualClass<any>
           | (Api.VirtualClass<any> | undefined)[];
         type ForbiddenResponses =
-          ForbiddenTypes
+          | ForbiddenTypes
           | (AnyLiteral & Record<string, ForbiddenTypes>);
 
         // Unwrap all chained promises
         const response = await promise;
         // Make sure responses do not include `VirtualClass` instances
-        const allowedResponse: Exclude<typeof response, ForbiddenResponses> = response;
+        const allowedResponse: Exclude<typeof response, ForbiddenResponses> =
+          response;
         // Suppress "unused variable" constraint
         void allowedResponse;
       } catch (err) {
@@ -299,7 +327,9 @@ function subscribeToWorker(onUpdate: OnApiUpdate) {
           const duration = performance.now() - DEBUG_startAt!;
           if (duration > 5) {
             // eslint-disable-next-line no-console
-            console.warn(`[API] Slow updates processing: ${payload.updates.length} updates in ${duration} ms`);
+            console.warn(
+              `[API] Slow updates processing: ${payload.updates.length} updates in ${duration} ms`,
+            );
           }
         }
       } else if (payload.type === 'methodResponse') {
@@ -356,11 +386,17 @@ function makeRequestToMaster(message: {
   const requestState = { messageId } as RequestState;
 
   // Re-wrap type because of `postMessage`
-  const promise = new Promise<MethodResponse<keyof Methods>>((resolve, reject) => {
-    Object.assign(requestState, { resolve, reject });
-  });
+  const promise = new Promise<MethodResponse<keyof Methods>>(
+    (resolve, reject) => {
+      Object.assign(requestState, { resolve, reject });
+    },
+  );
 
-  if ('args' in payload && 'name' in payload && typeof payload.args[1] === 'function') {
+  if (
+    'args' in payload &&
+    'name' in payload &&
+    typeof payload.args[1] === 'function'
+  ) {
     payload.withCallback = true;
 
     const callback = payload.args.pop() as AnyToVoidFunction;
@@ -395,11 +431,17 @@ function makeRequest(message: OriginPayload) {
   const requestState = { messageId } as RequestState;
 
   // Re-wrap type because of `postMessage`
-  const promise = new Promise<MethodResponse<keyof Methods>>((resolve, reject) => {
-    Object.assign(requestState, { resolve, reject });
-  });
+  const promise = new Promise<MethodResponse<keyof Methods>>(
+    (resolve, reject) => {
+      Object.assign(requestState, { resolve, reject });
+    },
+  );
 
-  if ('args' in payload && 'name' in payload && typeof payload.args[1] === 'function') {
+  if (
+    'args' in payload &&
+    'name' in payload &&
+    typeof payload.args[1] === 'function'
+  ) {
     payload.withCallback = true;
 
     const callback = payload.args.pop() as AnyToVoidFunction;
@@ -443,8 +485,11 @@ async function ensureWorkerPing() {
   try {
     await Promise.race([
       makeRequest({ type: 'ping' }),
-      pause(HEALTH_CHECK_TIMEOUT)
-        .then(() => (isResolved ? undefined : Promise.reject(new Error('HEALTH_CHECK_TIMEOUT')))),
+      pause(HEALTH_CHECK_TIMEOUT).then(() =>
+        isResolved
+          ? undefined
+          : Promise.reject(new Error('HEALTH_CHECK_TIMEOUT')),
+      ),
     ]);
   } catch (err) {
     // eslint-disable-next-line no-console

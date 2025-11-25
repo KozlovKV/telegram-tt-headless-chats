@@ -1,4 +1,5 @@
 use log::LevelFilter;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::{LazyLock, Mutex};
 use tokio::sync::broadcast::{channel, Sender, Receiver};
@@ -21,12 +22,18 @@ use crate::window::{WINDOW_STATES, WindowState};
 #[cfg(target_os = "macos")]
 mod mac;
 
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct UpdatePayload {
+  label: String,
+  body: serde_json::Value
+}
+
 #[derive(Debug)]
 pub struct AppStateStruct {
   pub notification_count: i32,
   pub is_muted: bool,
-  pub updates_tx: Sender<String>,
-  pub updates_rx: Receiver<String>,
+  pub updates_tx: Sender<UpdatePayload>,
+  pub updates_rx: Receiver<UpdatePayload>,
 }
 
 impl Default for AppStateStruct {
@@ -335,6 +342,7 @@ pub(crate) fn open_new_window(
   .inner_size(WINDOW_WIDTH, WINDOW_HEIGHT)
   .decorations(false)
   .always_on_top(true)
+  .shadow(false)
   // .min_inner_size(WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT)
   .disable_drag_drop_handler() // Required for Drag & Drop on Windows
   .initialization_script(&format!(

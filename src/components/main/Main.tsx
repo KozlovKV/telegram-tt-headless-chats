@@ -429,6 +429,7 @@ const Main = ({
 
   useEffect(() => {
     const parsedLocationHash = parseLocationHash(currentUserId);
+    // console.log(currentUserId, parsedLocationHash);
     if (!parsedLocationHash) return;
 
     openThread({
