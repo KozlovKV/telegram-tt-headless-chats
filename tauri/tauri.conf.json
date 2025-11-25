@@ -53,6 +53,6 @@
       }
     }
   },
-  "identifier": "org.telegram.TelegramAir",
+  "identifier": "com.github.kozlovkv.telegram-tt-headless-chats",
   "productName": "Telegram Air"
 }
