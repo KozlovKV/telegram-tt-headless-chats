@@ -12,8 +12,10 @@ export default function useTauriEvent<T>(name: string, callback: (event: Event<T
     let removeListener: VoidFunction | undefined;
 
     const setUpListener = async () => {
-      const { listen } = await import('@tauri-apps/api/event');
-      removeListener = await listen<T>(name, (event) => {
+      // console.log('setting up', name);
+      const { getCurrentWindow } = await import('@tauri-apps/api/window');
+      const window = getCurrentWindow();
+      removeListener = await window.listen<T>(name, (event) => {
         callback(event);
       });
     };
@@ -24,6 +26,7 @@ export default function useTauriEvent<T>(name: string, callback: (event: Event<T
     });
 
     return () => {
+      // console.log('unlisten', name);
       removeListener?.();
     };
   }, [name, callback]);

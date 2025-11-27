@@ -1,14 +1,24 @@
 import '../../global/actions/all';
 
+import { invoke } from '@tauri-apps/api/core';
+import { getCurrentWindow } from '@tauri-apps/api/window';
 import {
   beginHeavyAnimation,
-  memo, useEffect, useLayoutEffect,
-  useRef, useState,
+  memo,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
 } from '../../lib/teact/teact';
 import { addExtraClass } from '../../lib/teact/teact-dom';
 import { getActions, getGlobal, withGlobal } from '../../global';
 
-import type { ApiChatFolder, ApiLimitTypeWithModal, ApiUser } from '../../api/types';
+import type {
+  ApiChatFolder,
+  ApiLimitTypeWithModal,
+  ApiUser,
+  ApiUserFullInfo,
+} from '../../api/types';
 import type { TabState } from '../../global/types';
 
 import { BASE_EMOJI_KEYWORD_LANG, DEBUG, INACTIVE_MARKER } from '../../config';
@@ -29,16 +39,24 @@ import {
   selectPerformanceSettingsValue,
   selectTabState,
   selectUser,
+  selectUserFullInfo,
 } from '../../global/selectors';
 import { selectSharedSettings } from '../../global/selectors/sharedState';
 import { IS_TAURI } from '../../util/browser/globalEnvironment';
-import { IS_ANDROID, IS_WAVE_TRANSFORM_SUPPORTED } from '../../util/browser/windowEnvironment';
+import {
+  IS_ANDROID,
+  IS_WAVE_TRANSFORM_SUPPORTED,
+} from '../../util/browser/windowEnvironment';
 import buildClassName from '../../util/buildClassName';
 import { waitForTransitionEnd } from '../../util/cssAnimationEndListeners';
 import { processDeepLink } from '../../util/deeplink';
 import { Bundles, loadBundle } from '../../util/moduleLoader';
-import { parseInitialLocationHash, parseLocationHash } from '../../util/routing';
+import {
+  parseInitialLocationHash,
+  parseLocationHash,
+} from '../../util/routing';
 import updateIcon from '../../util/updateIcon';
+import { callApi } from '../../api/gramjs';
 
 import useInterval from '../../hooks/schedulers/useInterval';
 import useTimeout from '../../hooks/schedulers/useTimeout';
@@ -62,7 +80,6 @@ import CustomEmojiSetsModal from '../common/CustomEmojiSetsModal.async';
 import DeleteMessageModal from '../common/DeleteMessageModal.async';
 import StickerSetModal from '../common/StickerSetModal.async';
 import UnreadCount from '../common/UnreadCounter';
-import LeftColumn from '../left/LeftColumn';
 import MediaViewer from '../mediaViewer/MediaViewer.async';
 import ReactionPicker from '../middle/message/reactions/ReactionPicker.async';
 import MessageListHistoryHandler from '../middle/MessageListHistoryHandler';
@@ -102,6 +119,8 @@ export interface OwnProps {
 type StateProps = {
   isMasterTab?: boolean;
   currentUserId?: string;
+  currentUser?: ApiUser;
+  currentUserFullInfo?: ApiUserFullInfo;
   isLeftColumnOpen: boolean;
   isMiddleColumnOpen: boolean;
   isRightColumnOpen: boolean;
@@ -197,6 +216,8 @@ const Main = ({
   noRightColumnAnimation,
   isSynced,
   currentUserId,
+  currentUser,
+  currentUserFullInfo,
   isAccountFrozen,
   isAppConfigLoaded,
 }: OwnProps & StateProps) => {
@@ -259,6 +280,10 @@ const Main = ({
     loadAllStories,
     loadAllHiddenStories,
     loadContentSettings,
+    signOut,
+    openChat,
+    goToAuthQrCode,
+    navigateBack,
   } = getActions();
 
   if (DEBUG && !DEBUG_isLogged) {
@@ -286,9 +311,19 @@ const Main = ({
       // Can't have two active columns at the same time
       toggleLeftColumn();
     }
-  }, [isDesktop, isLeftColumnOpen, isMiddleColumnOpen, isMobile, toggleLeftColumn]);
+  }, [
+    isDesktop,
+    isLeftColumnOpen,
+    isMiddleColumnOpen,
+    isMobile,
+    toggleLeftColumn,
+  ]);
 
-  useInterval(checkAppVersion, isMasterTab ? APP_OUTDATED_TIMEOUT_MS : undefined, true);
+  useInterval(
+    checkAppVersion,
+    isMasterTab ? APP_OUTDATED_TIMEOUT_MS : undefined,
+    true
+  );
 
   // Initial API calls
   useEffect(() => {
@@ -344,7 +379,12 @@ const Main = ({
 
   // Initial Premium API calls
   useEffect(() => {
-    if (isMasterTab && isCurrentUserPremium && isAppConfigLoaded && !isAccountFrozen) {
+    if (
+      isMasterTab &&
+      isCurrentUserPremium &&
+      isAppConfigLoaded &&
+      !isAccountFrozen
+    ) {
       loadDefaultStatusIcons();
       loadRecentEmojiStatuses();
     }
@@ -383,7 +423,14 @@ const Main = ({
         loadAddedStickers();
       }
     }
-  }, [addedSetIds, addedCustomEmojiIds, isMasterTab, isSynced, isAppConfigLoaded, isAccountFrozen]);
+  }, [
+    addedSetIds,
+    addedCustomEmojiIds,
+    isMasterTab,
+    isSynced,
+    isAppConfigLoaded,
+    isAccountFrozen,
+  ]);
 
   useEffect(() => {
     loadBotFreezeAppeal();
@@ -427,6 +474,75 @@ const Main = ({
     }
   });
 
+  useTauriEvent<string>('external://open-chat', (e) => {
+    if (!e.payload) return;
+    openChat({ id: e.payload, shouldReplaceHistory: true });
+  });
+
+  useTauriEvent('external://chats-request', async () => {
+    try {
+      const response = await callApi('fetchChats', { limit: 100 });
+      console.log('Got chats: ', response);
+      if (!response) {
+        await invoke('send_update', {
+          update: {
+            label: 'external://chats-response',
+            body: 'uauthorized',
+          },
+        });
+        return;
+      }
+      // const chats = response.chats.map((chat) => ({
+      //   id: chat.id,
+      //   title: chat.title,
+      //   type: chat.type,
+      //   photoId: chat.avatarPhotoId,
+      // }));
+      await invoke('send_update', {
+        update: {
+          label: 'external://chats-response',
+          body: {
+            count: response.totalChatCount,
+            chats: response.chats,
+            messages: response.messages,
+            statuses: response.userStatusesById,
+          },
+        },
+      });
+    } catch (err) {
+      console.error('Failed to get chats:', err);
+    }
+  });
+
+  // TODO: проверить, что нормально обновляется юзер
+  useTauriEvent('external://me-request', async () => {
+    try {
+      console.log('Current user', currentUser);
+      if (!currentUser?.id) {
+        await invoke('send_update', {
+          update: {
+            label: 'external://me-response',
+            body: 'uauthorized',
+          },
+        });
+        return;
+      }
+      await invoke('send_update', {
+        update: {
+          label: 'external://me-response',
+          body: { main: currentUser, additional: currentUserFullInfo },
+        },
+      });
+    } catch (err) {
+      console.error('Fail with user data:', err);
+    }
+  });
+
+  useTauriEvent('external://signout', () => {
+    signOut();
+    window.location.href = '/';
+  });
+
   useEffect(() => {
     const parsedLocationHash = parseLocationHash(currentUserId);
     // console.log(currentUserId, parsedLocationHash);
@@ -457,27 +573,37 @@ const Main = ({
   const forceUpdate = useForceUpdate();
 
   // Handle opening middle column
-  useSyncEffect(([prevIsLeftColumnOpen]) => {
-    if (prevIsLeftColumnOpen === undefined || isLeftColumnOpen === prevIsLeftColumnOpen || !withInterfaceAnimations) {
-      return;
-    }
+  useSyncEffect(
+    ([prevIsLeftColumnOpen]) => {
+      if (
+        prevIsLeftColumnOpen === undefined ||
+        isLeftColumnOpen === prevIsLeftColumnOpen ||
+        !withInterfaceAnimations
+      ) {
+        return;
+      }
 
-    willAnimateLeftColumnRef.current = true;
+      willAnimateLeftColumnRef.current = true;
 
-    if (IS_ANDROID) {
-      requestNextMutation(() => {
-        document.body.classList.toggle('android-left-blackout-open', !isLeftColumnOpen);
+      if (IS_ANDROID) {
+        requestNextMutation(() => {
+          document.body.classList.toggle(
+            'android-left-blackout-open',
+            !isLeftColumnOpen
+          );
+        });
+      }
+
+      const endHeavyAnimation = beginHeavyAnimation();
+
+      waitForTransitionEnd(document.getElementById('MiddleColumn')!, () => {
+        endHeavyAnimation();
+        willAnimateLeftColumnRef.current = false;
+        forceUpdate();
       });
-    }
-
-    const endHeavyAnimation = beginHeavyAnimation();
-
-    waitForTransitionEnd(document.getElementById('MiddleColumn')!, () => {
-      endHeavyAnimation();
-      willAnimateLeftColumnRef.current = false;
-      forceUpdate();
-    });
-  }, [isLeftColumnOpen, withInterfaceAnimations, forceUpdate]);
+    },
+    [isLeftColumnOpen, withInterfaceAnimations, forceUpdate]
+  );
 
   useShowTransition({
     ref: containerRef,
@@ -486,39 +612,46 @@ const Main = ({
     prefix: 'right-column-',
   });
   const willAnimateRightColumnRef = useRef(false);
-  const [isNarrowMessageList, setIsNarrowMessageList] = useState(isRightColumnOpen);
+  const [isNarrowMessageList, setIsNarrowMessageList] =
+    useState(isRightColumnOpen);
 
   const isFullscreen = useFullscreenStatus();
 
   // Handle opening right column
-  useSyncEffect(([prevIsMiddleColumnOpen, prevIsRightColumnOpen]) => {
-    if (prevIsRightColumnOpen === undefined || isRightColumnOpen === prevIsRightColumnOpen) {
-      return;
-    }
+  useSyncEffect(
+    ([prevIsMiddleColumnOpen, prevIsRightColumnOpen]) => {
+      if (
+        prevIsRightColumnOpen === undefined ||
+        isRightColumnOpen === prevIsRightColumnOpen
+      ) {
+        return;
+      }
 
-    if (!prevIsMiddleColumnOpen || noRightColumnAnimation) {
-      setIsNarrowMessageList(isRightColumnOpen);
-      return;
-    }
+      if (!prevIsMiddleColumnOpen || noRightColumnAnimation) {
+        setIsNarrowMessageList(isRightColumnOpen);
+        return;
+      }
 
-    willAnimateRightColumnRef.current = true;
+      willAnimateRightColumnRef.current = true;
 
-    const endHeavyAnimation = beginHeavyAnimation();
+      const endHeavyAnimation = beginHeavyAnimation();
 
-    waitForTransitionEnd(document.getElementById('RightColumn')!, () => {
-      endHeavyAnimation();
-      willAnimateRightColumnRef.current = false;
-      forceUpdate();
-      setIsNarrowMessageList(isRightColumnOpen);
-    });
-  }, [isMiddleColumnOpen, isRightColumnOpen, noRightColumnAnimation, forceUpdate]);
+      waitForTransitionEnd(document.getElementById('RightColumn')!, () => {
+        endHeavyAnimation();
+        willAnimateRightColumnRef.current = false;
+        forceUpdate();
+        setIsNarrowMessageList(isRightColumnOpen);
+      });
+    },
+    [isMiddleColumnOpen, isRightColumnOpen, noRightColumnAnimation, forceUpdate]
+  );
 
   const className = buildClassName(
     willAnimateLeftColumnRef.current && 'left-column-animating',
     willAnimateRightColumnRef.current && 'right-column-animating',
     isNarrowMessageList && 'narrow-message-list',
     shouldSkipHistoryAnimations && 'history-animation-disabled',
-    isFullscreen && 'is-fullscreen',
+    isFullscreen && 'is-fullscreen'
   );
 
   const handleBlur = useLastCallback(() => {
@@ -551,7 +684,7 @@ const Main = ({
   return (
     <div ref={containerRef} id="Main" className={className}>
       {/* Убрать следующий компонент чтобы не было основного меню */}
-      <LeftColumn ref={leftColumnRef} />
+      {/* <LeftColumn ref={leftColumnRef} /> */}
       <MiddleColumn leftColumnRef={leftColumnRef} isMobile={isMobile} />
       <RightColumn isMobile={isMobile} />
       <MediaViewer isOpen={isMediaViewerOpen} />
@@ -574,7 +707,9 @@ const Main = ({
         onClose={handleCustomEmojiSetsModalClose}
       />
       {activeGroupCallId && <GroupCall groupCallId={activeGroupCallId} />}
-      <ActiveCallHeader isActive={Boolean(activeGroupCallId || isPhoneCallActive)} />
+      <ActiveCallHeader
+        isActive={Boolean(activeGroupCallId || isPhoneCallActive)}
+      />
       <NewContactModal
         isOpen={Boolean(newContactUserId || newContactByPhoneNumber)}
         userId={newContactUserId}
@@ -593,7 +728,9 @@ const Main = ({
         type={botTrustRequest?.type}
         shouldRequestWriteAccess={botTrustRequest?.shouldRequestWriteAccess}
       />
-      <AttachBotRecipientPicker requestedAttachBotInChat={requestedAttachBotInChat} />
+      <AttachBotRecipientPicker
+        requestedAttachBotInChat={requestedAttachBotInChat}
+      />
       <MessageListHistoryHandler />
       <PremiumMainModal isOpen={isPremiumModalOpen} />
       <GiveawayModal isOpen={isGiveawayModalOpen} />
@@ -608,11 +745,9 @@ const Main = ({
   );
 };
 
-export default memo(withGlobal<OwnProps>(
-  (global, { isMobile }): Complete<StateProps> => {
-    const {
-      currentUserId,
-    } = global;
+export default memo(
+  withGlobal<OwnProps>((global, { isMobile }): Complete<StateProps> => {
+    const { currentUserId } = global;
 
     const {
       botTrustRequest,
@@ -641,17 +776,30 @@ export default memo(withGlobal<OwnProps>(
 
     const { wasTimeFormatSetManually } = selectSharedSettings(global);
 
-    const gameMessage = openedGame && selectChatMessage(global, openedGame.chatId, openedGame.messageId);
+    const gameMessage =
+      openedGame &&
+      selectChatMessage(global, openedGame.chatId, openedGame.messageId);
     const gameTitle = gameMessage?.content.game?.title;
     const { chatId } = selectCurrentMessageList(global) || {};
-    const noRightColumnAnimation = !selectPerformanceSettingsValue(global, 'rightColumnAnimations')
-      || !selectCanAnimateInterface(global);
+    const noRightColumnAnimation =
+      !selectPerformanceSettingsValue(global, 'rightColumnAnimations') ||
+      !selectCanAnimateInterface(global);
 
-    const deleteFolderDialog = deleteFolderDialogModal ? selectChatFolder(global, deleteFolderDialogModal) : undefined;
+    const deleteFolderDialog = deleteFolderDialogModal
+      ? selectChatFolder(global, deleteFolderDialogModal)
+      : undefined;
     const isAccountFrozen = selectIsCurrentUserFrozen(global);
+    const currentUser = currentUserId
+      ? selectUser(global, currentUserId)
+      : undefined;
+    const currentUserFullInfo = currentUserId
+      ? selectUserFullInfo(global, currentUserId)
+      : undefined;
 
     return {
       currentUserId,
+      currentUser,
+      currentUserFullInfo,
       isLeftColumnOpen: isLeftColumnShown,
       isMiddleColumnOpen: Boolean(chatId),
       isRightColumnOpen: selectIsRightColumnShown(global, isMobile),
@@ -667,7 +815,9 @@ export default memo(withGlobal<OwnProps>(
       openedStickerSetShortName,
       openedCustomEmojiSetIds,
       isServiceChatReady: selectIsServiceChatReady(global),
-      activeGroupCallId: isMasterTab ? global.groupCalls.activeGroupCallId : undefined,
+      activeGroupCallId: isMasterTab
+        ? global.groupCalls.activeGroupCallId
+        : undefined,
       withInterfaceAnimations: selectCanAnimateInterface(global),
       wasTimeFormatSetManually,
       isPhoneCallActive: isMasterTab ? Boolean(global.phoneCall) : undefined,
@@ -679,7 +829,8 @@ export default memo(withGlobal<OwnProps>(
       gameTitle,
       isRatePhoneCallModalOpen: Boolean(ratingPhoneCall),
       botTrustRequest,
-      botTrustRequestBot: botTrustRequest && selectUser(global, botTrustRequest.botId),
+      botTrustRequestBot:
+        botTrustRequest && selectUser(global, botTrustRequest.botId),
       requestedAttachBotInChat,
       isCurrentUserPremium: selectIsCurrentUserPremium(global),
       isPremiumModalOpen: premiumModal?.isOpen,
@@ -697,5 +848,5 @@ export default memo(withGlobal<OwnProps>(
       isAccountFrozen,
       isAppConfigLoaded: global.isAppConfigLoaded,
     };
-  },
-)(Main));
+  })(Main)
+);

@@ -21,6 +21,7 @@ import {
   DATA_BROADCAST_CHANNEL_NAME,
 } from '../../../util/multiaccount';
 import { pause, throttleWithTickEnd } from '../../../util/schedulers';
+import { loadSlotSession } from '../../../util/sessions';
 
 type RequestState = {
   messageId: string;
@@ -60,7 +61,7 @@ subscribeToMasterChange((isMasterTabNew) => {
 });
 
 const channel = new BroadcastChannel(
-  DATA_BROADCAST_CHANNEL_NAME,
+  DATA_BROADCAST_CHANNEL_NAME
 ) as TypedBroadcastChannel;
 
 const postMessagesOnTickEnd = throttleWithTickEnd(() => {
@@ -117,8 +118,19 @@ export function initApi(onUpdate: OnApiUpdate, initialArgs: ApiInitialArgs) {
     });
     subscribeToWorker(onUpdate);
     subscribeToWorker((apiUpdate) => {
+      if (apiUpdate['@type'] === 'updateUser') {
+        const session = loadSlotSession(1);
+        if (session?.userId && apiUpdate.id === session.userId) {
+          invoke('send_update', {
+            update: {
+              label: 'external://me-response',
+              body: apiUpdate.fullInfo,
+            },
+          });
+        }
+      }
       invoke('send_update', {
-        update: { label: apiUpdate['@type'], body: '' },
+        update: { label: apiUpdate['@type'], body: apiUpdate },
       });
     });
 
@@ -250,14 +262,14 @@ export function callApi<T extends keyof Methods>(
 
   const promise = isMasterTab
     ? makeRequest({
-      type: 'callMethod',
-      name: fnName,
-      args,
-    })
+        type: 'callMethod',
+        name: fnName,
+        args,
+      })
     : makeRequestToMaster({
-      name: fnName,
-      args,
-    });
+        name: fnName,
+        args,
+      });
 
   // Some TypeScript magic to make sure `VirtualClass` is never returned from any method
   if (DEBUG) {
@@ -328,7 +340,7 @@ function subscribeToWorker(onUpdate: OnApiUpdate) {
           if (duration > 5) {
             // eslint-disable-next-line no-console
             console.warn(
-              `[API] Slow updates processing: ${payload.updates.length} updates in ${duration} ms`,
+              `[API] Slow updates processing: ${payload.updates.length} updates in ${duration} ms`
             );
           }
         }
@@ -389,7 +401,7 @@ function makeRequestToMaster(message: {
   const promise = new Promise<MethodResponse<keyof Methods>>(
     (resolve, reject) => {
       Object.assign(requestState, { resolve, reject });
-    },
+    }
   );
 
   if (
@@ -434,7 +446,7 @@ function makeRequest(message: OriginPayload) {
   const promise = new Promise<MethodResponse<keyof Methods>>(
     (resolve, reject) => {
       Object.assign(requestState, { resolve, reject });
-    },
+    }
   );
 
   if (
@@ -488,7 +500,7 @@ async function ensureWorkerPing() {
       pause(HEALTH_CHECK_TIMEOUT).then(() =>
         isResolved
           ? undefined
-          : Promise.reject(new Error('HEALTH_CHECK_TIMEOUT')),
+          : Promise.reject(new Error('HEALTH_CHECK_TIMEOUT'))
       ),
     ]);
   } catch (err) {

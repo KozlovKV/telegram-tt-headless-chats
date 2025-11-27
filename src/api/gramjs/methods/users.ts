@@ -31,11 +31,13 @@ export async function fetchFullUser({
   accessHash?: string;
 }) {
   const input = buildInputUser(id, accessHash);
+  console.log('1', input);
   if (!(input instanceof GramJs.InputUser)) {
     return undefined;
   }
 
   const result = await invokeRequest(new GramJs.users.GetFullUser({ id: input }));
+  console.log('2', result);
 
   if (!result) {
     return undefined;

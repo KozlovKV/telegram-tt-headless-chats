@@ -112,7 +112,7 @@ async fn open_chat(
   let window = window.unwrap();
 
   window.emit("external://open-chat", id).map_err(|err| {
-    let message = format!("Failed to emit chat change event: {err:?}");
+    let message = format!("Failed to emit 'external://open-chat' event: {err:?}");
     log::error!("{message}");
     message
   })?;
@@ -132,11 +132,55 @@ async fn get_chats(AxumState(app_handle): AxumState<AppHandle>) -> Result<(), St
   let window = window.unwrap();
 
   window.emit("external://chats-request", "").map_err(|err| {
-    let message = format!("Failed to emit chat change event: {err:?}");
+    let message = format!("Failed to emit 'external://chats-request' event: {err:?}");
     log::error!("{message}");
     message
   })?;
   log::info!("Sent 'external://chats-request' emit to front");
+
+  Ok(())
+}
+
+async fn get_me(
+  AxumState(app_handle): AxumState<AppHandle>,
+) -> Result<(), String> {
+  log::info!("Get me request");
+  let window = app_handle.get_webview_window("main");
+  if window.is_none() {
+    let message = String::from("Failed to get main window");
+    log::error!("{message}");
+    return Err(message);
+  }
+  let window = window.unwrap();
+
+  window.emit("external://me-request", "").map_err(|err| {
+    let message = format!("Failed to emit 'external://me-request' event: {err:?}");
+    log::error!("{message}");
+    message
+  })?;
+  log::info!("Sent 'external://me-request' emit to front");
+
+  Ok(())
+}
+
+async fn signout(
+  AxumState(app_handle): AxumState<AppHandle>,
+) -> Result<(), String> {
+  log::info!("Signout request");
+  let window = app_handle.get_webview_window("main");
+  if window.is_none() {
+    let message = String::from("Failed to get main window");
+    log::error!("{message}");
+    return Err(message);
+  }
+  let window = window.unwrap();
+
+  window.emit("external://signout", "").map_err(|err| {
+    let message = format!("Failed to emit 'external://signout' event: {err:?}");
+    log::error!("{message}");
+    message
+  })?;
+  log::info!("Sent 'external://signout' emit to front");
 
   Ok(())
 }
@@ -182,6 +226,8 @@ async fn locate_window(
 
 pub async fn start_server(app_handle: AppHandle) -> Result<(), Box<dyn std::error::Error>> {
   let app = Router::new()
+    .route("/user/me", get(get_me))
+    .route("/user/signout", post(signout))
     .route("/chat", get(get_chats))
     .route("/chat/{id}/open", post(open_chat))
     .route("/window/show", post(show_window))
