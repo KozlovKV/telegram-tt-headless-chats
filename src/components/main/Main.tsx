@@ -1,7 +1,6 @@
 import '../../global/actions/all';
 
 import { invoke } from '@tauri-apps/api/core';
-import { getCurrentWindow } from '@tauri-apps/api/window';
 import {
   beginHeavyAnimation,
   memo,
@@ -80,6 +79,7 @@ import CustomEmojiSetsModal from '../common/CustomEmojiSetsModal.async';
 import DeleteMessageModal from '../common/DeleteMessageModal.async';
 import StickerSetModal from '../common/StickerSetModal.async';
 import UnreadCount from '../common/UnreadCounter';
+import LeftColumn from '../left/LeftColumn';
 import MediaViewer from '../mediaViewer/MediaViewer.async';
 import ReactionPicker from '../middle/message/reactions/ReactionPicker.async';
 import MessageListHistoryHandler from '../middle/MessageListHistoryHandler';
@@ -322,7 +322,7 @@ const Main = ({
   useInterval(
     checkAppVersion,
     isMasterTab ? APP_OUTDATED_TIMEOUT_MS : undefined,
-    true
+    true,
   );
 
   // Initial API calls
@@ -475,6 +475,7 @@ const Main = ({
   });
 
   useTauriEvent<string>('external://open-chat', (e) => {
+    console.log('Opening', e.payload);
     if (!e.payload) return;
     openChat({ id: e.payload, shouldReplaceHistory: true });
   });
@@ -492,12 +493,6 @@ const Main = ({
         });
         return;
       }
-      // const chats = response.chats.map((chat) => ({
-      //   id: chat.id,
-      //   title: chat.title,
-      //   type: chat.type,
-      //   photoId: chat.avatarPhotoId,
-      // }));
       await invoke('send_update', {
         update: {
           label: 'external://chats-response',
@@ -539,6 +534,7 @@ const Main = ({
   });
 
   useTauriEvent('external://signout', () => {
+    console.log('Signing out');
     signOut();
     window.location.href = '/';
   });
@@ -589,7 +585,7 @@ const Main = ({
         requestNextMutation(() => {
           document.body.classList.toggle(
             'android-left-blackout-open',
-            !isLeftColumnOpen
+            !isLeftColumnOpen,
           );
         });
       }
@@ -602,7 +598,7 @@ const Main = ({
         forceUpdate();
       });
     },
-    [isLeftColumnOpen, withInterfaceAnimations, forceUpdate]
+    [isLeftColumnOpen, withInterfaceAnimations, forceUpdate],
   );
 
   useShowTransition({
@@ -643,7 +639,7 @@ const Main = ({
         setIsNarrowMessageList(isRightColumnOpen);
       });
     },
-    [isMiddleColumnOpen, isRightColumnOpen, noRightColumnAnimation, forceUpdate]
+    [isMiddleColumnOpen, isRightColumnOpen, noRightColumnAnimation, forceUpdate],
   );
 
   const className = buildClassName(
@@ -651,7 +647,7 @@ const Main = ({
     willAnimateRightColumnRef.current && 'right-column-animating',
     isNarrowMessageList && 'narrow-message-list',
     shouldSkipHistoryAnimations && 'history-animation-disabled',
-    isFullscreen && 'is-fullscreen'
+    isFullscreen && 'is-fullscreen',
   );
 
   const handleBlur = useLastCallback(() => {
@@ -684,7 +680,7 @@ const Main = ({
   return (
     <div ref={containerRef} id="Main" className={className}>
       {/* Убрать следующий компонент чтобы не было основного меню */}
-      {/* <LeftColumn ref={leftColumnRef} /> */}
+      <LeftColumn ref={leftColumnRef} />
       <MiddleColumn leftColumnRef={leftColumnRef} isMobile={isMobile} />
       <RightColumn isMobile={isMobile} />
       <MediaViewer isOpen={isMediaViewerOpen} />
@@ -848,5 +844,5 @@ export default memo(
       isAccountFrozen,
       isAppConfigLoaded: global.isAppConfigLoaded,
     };
-  })(Main)
+  })(Main),
 );
