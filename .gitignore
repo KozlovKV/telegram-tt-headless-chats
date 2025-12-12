@@ -1,6 +1,7 @@
 dist/
 tauri/target/
 dist/build-stats.json
+build-stats.json
 node_modules
 .cache
 .env
