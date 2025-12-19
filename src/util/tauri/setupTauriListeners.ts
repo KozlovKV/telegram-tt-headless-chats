@@ -8,6 +8,7 @@ type DownloadFinishedEvent = {
   url: string;
 };
 
+// TODO: здесь можно будет расположить наши листенеры, елси в main будет неудобно
 let isSetup = false;
 export default function setupTauriListeners() {
   if (isSetup) return;
