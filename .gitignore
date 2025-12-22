@@ -1,5 +1,9 @@
+dist/
+tauri/target/
+dist/build-stats.json
 public/build-stats.json
-dist
+build-stats.json
+statoscope-report.html
 node_modules
 .cache
 .env
