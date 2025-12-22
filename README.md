@@ -37,6 +37,13 @@ Example usage:
 await invoke(new GramJs.help.GetAppConfig())
 ```
 
+## Docker image
+You also need to define env vars from [local setup](#local-setup)
+```
+docker build . -t telegram-web
+docker run -p <external_port>:1235 telegram-web
+```
+
 ### Dependencies
 * [GramJS](https://github.com/gram-js/gramjs) ([MIT License](https://github.com/gram-js/gramjs/blob/master/LICENSE))
 * [pako](https://github.com/nodeca/pako) ([MIT License](https://github.com/nodeca/pako/blob/master/LICENSE))

@@ -207,6 +207,15 @@ pub fn run() {
     Ok(())
   });
 
+  /*
+    mark_title_bar_overlay,
+    set_notifications_count,
+    set_window_title,
+    open_new_window_cmd,
+    save_current_url,
+    set_menu_translations
+   */
+
   let app = app.invoke_handler(tauri::generate_handler![
     mark_title_bar_overlay,
     set_notifications_count,
