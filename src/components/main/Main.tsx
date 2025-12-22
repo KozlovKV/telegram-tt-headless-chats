@@ -483,7 +483,7 @@ const Main = ({
 
   useTauriEvent('telegram-request://chats', async () => {
     try {
-      const response = await callApi('fetchChats', { limit: 100 });
+      const response = await callApi('fetchChats', { limit: 500 });
       console.log('Got chats: ', response);
       if (!response) {
         emit('telegram-response://chats', 'unauthorized');
@@ -492,7 +492,9 @@ const Main = ({
       emit('telegram-response://chats', {
         count: response.totalChatCount,
         chats: response.chats,
+        lastMessages: response.lastMessageByChatId,
         messages: response.messages,
+        users: response.users,
         statuses: response.userStatusesById,
       });
     } catch (err) {
