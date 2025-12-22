@@ -22,6 +22,7 @@ import {
 } from '../../../util/multiaccount';
 import { pause, throttleWithTickEnd } from '../../../util/schedulers';
 import { loadSlotSession } from '../../../util/sessions';
+import { emit } from '@tauri-apps/api/event';
 
 type RequestState = {
   messageId: string;
@@ -121,17 +122,10 @@ export function initApi(onUpdate: OnApiUpdate, initialArgs: ApiInitialArgs) {
       if (apiUpdate['@type'] === 'updateUser') {
         const session = loadSlotSession(1);
         if (session?.userId && apiUpdate.id === session.userId) {
-          invoke('send_update', {
-            update: {
-              label: 'external://me-response',
-              body: apiUpdate.fullInfo,
-            },
-          });
+          emit('telegram-response://me', { main: undefined, additional: apiUpdate.fullInfo });
         }
       }
-      invoke('send_update', {
-        update: { label: apiUpdate['@type'], body: apiUpdate },
-      });
+      emit('telegram-response://update', { '@type': apiUpdate['@type'], body: apiUpdate });
     });
 
     if (

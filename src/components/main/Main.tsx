@@ -111,6 +111,7 @@ import SnapEffectContainer from './visualEffects/SnapEffectContainer';
 import WaveContainer from './visualEffects/WaveContainer';
 
 import './Main.scss';
+import { emit } from '@tauri-apps/api/event';
 
 export interface OwnProps {
   isMobile?: boolean;
@@ -474,35 +475,25 @@ const Main = ({
     }
   });
 
-  useTauriEvent<string>('external://open-chat', (e) => {
+  useTauriEvent<string>('telegram-request://open-chat', (e) => {
     console.log('Opening', e.payload);
     if (!e.payload) return;
     openChat({ id: e.payload, shouldReplaceHistory: true });
   });
 
-  useTauriEvent('external://chats-request', async () => {
+  useTauriEvent('telegram-request://chats', async () => {
     try {
       const response = await callApi('fetchChats', { limit: 100 });
       console.log('Got chats: ', response);
       if (!response) {
-        await invoke('send_update', {
-          update: {
-            label: 'external://chats-response',
-            body: 'uauthorized',
-          },
-        });
+        emit('telegram-response://chats', 'unauthorized');
         return;
       }
-      await invoke('send_update', {
-        update: {
-          label: 'external://chats-response',
-          body: {
-            count: response.totalChatCount,
-            chats: response.chats,
-            messages: response.messages,
-            statuses: response.userStatusesById,
-          },
-        },
+      emit('telegram-response://chats', {
+        count: response.totalChatCount,
+        chats: response.chats,
+        messages: response.messages,
+        statuses: response.userStatusesById,
       });
     } catch (err) {
       console.error('Failed to get chats:', err);
@@ -510,30 +501,20 @@ const Main = ({
   });
 
   // TODO: проверить, что нормально обновляется юзер
-  useTauriEvent('external://me-request', async () => {
+  useTauriEvent('telegram-request://me', async () => {
     try {
       console.log('Current user', currentUser);
       if (!currentUser?.id) {
-        await invoke('send_update', {
-          update: {
-            label: 'external://me-response',
-            body: 'uauthorized',
-          },
-        });
+        emit('telegram-response://me', 'unauthorized');
         return;
       }
-      await invoke('send_update', {
-        update: {
-          label: 'external://me-response',
-          body: { main: currentUser, additional: currentUserFullInfo },
-        },
-      });
+      emit('telegram-response://me', { main: currentUser, additional: currentUserFullInfo });
     } catch (err) {
       console.error('Fail with user data:', err);
     }
   });
 
-  useTauriEvent('external://signout', () => {
+  useTauriEvent('telegram-request://signout', () => {
     console.log('Signing out');
     signOut();
     window.location.href = '/';
@@ -639,7 +620,12 @@ const Main = ({
         setIsNarrowMessageList(isRightColumnOpen);
       });
     },
-    [isMiddleColumnOpen, isRightColumnOpen, noRightColumnAnimation, forceUpdate],
+    [
+      isMiddleColumnOpen,
+      isRightColumnOpen,
+      noRightColumnAnimation,
+      forceUpdate,
+    ],
   );
 
   const className = buildClassName(

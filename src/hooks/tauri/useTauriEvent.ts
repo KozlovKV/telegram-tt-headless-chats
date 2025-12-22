@@ -1,13 +1,16 @@
 import type { Event } from '@tauri-apps/api/event';
 import { useEffect } from '../../lib/teact/teact';
 
-import { IS_TAURI } from '../../util/browser/globalEnvironment';
+import { IS_TAURI_NEW } from '../../util/browser/globalEnvironment';
 
 export default function useTauriEvent<T>(name: string, callback: (event: Event<T>) => void) {
   return useEffect(() => {
-    if (!IS_TAURI) {
+    if (!IS_TAURI_NEW) {
       return undefined;
     }
+    // if (!IS_TAURI) {
+    //   return undefined;
+    // }
 
     let removeListener: VoidFunction | undefined;
 

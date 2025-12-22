@@ -39,7 +39,7 @@ await invoke(new GramJs.help.GetAppConfig())
 
 ## Docker image
 You also need to define env vars from [local setup](#local-setup)
-```
+```bash
 docker build . -t telegram-web
 docker run -p <external_port>:1235 telegram-web
 ```
@@ -63,3 +63,8 @@ docker run -p <external_port>:1235 telegram-web
 
 ## Bug reports and Suggestions
 If you find an issue with this app, let Telegram know using the [Suggestions Platform](https://bugs.telegram.org/c/4002).
+
+## Tauri reporting points
+- Worker background updates are mirrorred using `subscribeToWorker` in `./src/api/gramjs/worker/connector.ts`
+- Listeners for requests updates are handled in `./src/components/main/Main.tsx` using `useTauriEvent`
+
