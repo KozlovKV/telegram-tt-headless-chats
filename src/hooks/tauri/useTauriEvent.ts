@@ -8,16 +8,15 @@ export default function useTauriEvent<T>(name: string, callback: (event: Event<T
     if (!IS_TAURI_NEW) {
       return undefined;
     }
-    // if (!IS_TAURI) {
-    //   return undefined;
-    // }
 
+    const uuid = crypto.randomUUID();
     let removeListener: VoidFunction | undefined;
 
     const setUpListener = async () => {
-      // console.log('setting up', name);
       const { getCurrentWindow } = await import('@tauri-apps/api/window');
       const window = getCurrentWindow();
+      if (window.listeners[name]) return;
+      // console.log('setting up', name, uuid);
       removeListener = await window.listen<T>(name, (event) => {
         callback(event);
       });
@@ -29,7 +28,7 @@ export default function useTauriEvent<T>(name: string, callback: (event: Event<T
     });
 
     return () => {
-      // console.log('unlisten', name);
+      // console.log('unlisten', name, uuid);
       removeListener?.();
     };
   }, [name, callback]);

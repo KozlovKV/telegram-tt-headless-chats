@@ -1,6 +1,6 @@
 import '../../global/actions/all';
 
-import { invoke } from '@tauri-apps/api/core';
+import { emit } from '@tauri-apps/api/event';
 import {
   beginHeavyAnimation,
   memo,
@@ -13,8 +13,10 @@ import { addExtraClass } from '../../lib/teact/teact-dom';
 import { getActions, getGlobal, withGlobal } from '../../global';
 
 import type {
+  ApiChat,
   ApiChatFolder,
   ApiLimitTypeWithModal,
+  ApiMessage,
   ApiUser,
   ApiUserFullInfo,
 } from '../../api/types';
@@ -25,6 +27,7 @@ import { requestNextMutation } from '../../lib/fasterdom/fasterdom';
 import {
   selectCanAnimateInterface,
   selectChatFolder,
+  selectChatLastMessage,
   selectChatMessage,
   selectCurrentMessageList,
   selectIsCurrentUserFrozen,
@@ -55,7 +58,6 @@ import {
   parseLocationHash,
 } from '../../util/routing';
 import updateIcon from '../../util/updateIcon';
-import { callApi } from '../../api/gramjs';
 
 import useInterval from '../../hooks/schedulers/useInterval';
 import useTimeout from '../../hooks/schedulers/useTimeout';
@@ -111,7 +113,8 @@ import SnapEffectContainer from './visualEffects/SnapEffectContainer';
 import WaveContainer from './visualEffects/WaveContainer';
 
 import './Main.scss';
-import { emit } from '@tauri-apps/api/event';
+import { callApi } from '../../api/gramjs/methods/init';
+import { Chats } from '../../lib/gramjs/tl/api';
 
 export interface OwnProps {
   isMobile?: boolean;
@@ -165,6 +168,8 @@ type StateProps = {
   isSynced?: boolean;
   isAccountFrozen?: boolean;
   isAppConfigLoaded?: boolean;
+  chats: Chats;
+  allChatsWithLastMsg?: { chat: ApiChat; lastMessage?: ApiMessage }[];
 };
 
 const APP_OUTDATED_TIMEOUT_MS = 5 * 60 * 1000; // 5 min
@@ -221,6 +226,8 @@ const Main = ({
   currentUserFullInfo,
   isAccountFrozen,
   isAppConfigLoaded,
+  chats,
+  allChatsWithLastMsg,
 }: OwnProps & StateProps) => {
   const {
     initMain,
@@ -283,8 +290,6 @@ const Main = ({
     loadContentSettings,
     signOut,
     openChat,
-    goToAuthQrCode,
-    navigateBack,
   } = getActions();
 
   if (DEBUG && !DEBUG_isLogged) {
@@ -345,6 +350,7 @@ const Main = ({
   useEffect(() => {
     if (isMasterTab && isSynced && isAppConfigLoaded && !isAccountFrozen) {
       loadAllChats({ listType: 'saved' });
+      loadAllChats({ listType: 'active' });
       loadAllStories();
       loadAllHiddenStories();
       loadContentSettings();
@@ -483,20 +489,16 @@ const Main = ({
 
   useTauriEvent('telegram-request://chats', async () => {
     try {
+      console.log(chats);
+      console.log('chats: ', allChatsWithLastMsg);
+      console.log('filtered chats: ', allChatsWithLastMsg?.filter((val) => val.lastMessage));
       const response = await callApi('fetchChats', { limit: 500 });
-      console.log('Got chats: ', response);
-      if (!response) {
-        emit('telegram-response://chats', 'unauthorized');
+      console.log('fetched', response);
+      if (!currentUser?.id) {
+        await emit('telegram-response://chats', 'unauthorized');
         return;
       }
-      emit('telegram-response://chats', {
-        count: response.totalChatCount,
-        chats: response.chats,
-        lastMessages: response.lastMessageByChatId,
-        messages: response.messages,
-        users: response.users,
-        statuses: response.userStatusesById,
-      });
+      await emit('telegram-response://chats', allChatsWithLastMsg);
     } catch (err) {
       console.error('Failed to get chats:', err);
     }
@@ -507,10 +509,13 @@ const Main = ({
     try {
       console.log('Current user', currentUser);
       if (!currentUser?.id) {
-        emit('telegram-response://me', 'unauthorized');
+        await emit('telegram-response://me', 'unauthorized');
         return;
       }
-      emit('telegram-response://me', { main: currentUser, additional: currentUserFullInfo });
+      await emit('telegram-response://me', {
+        main: currentUser,
+        additional: currentUserFullInfo,
+      });
     } catch (err) {
       console.error('Fail with user data:', err);
     }
@@ -731,7 +736,7 @@ const Main = ({
 
 export default memo(
   withGlobal<OwnProps>((global, { isMobile }): Complete<StateProps> => {
-    const { currentUserId } = global;
+    const { currentUserId, chats } = global;
 
     const {
       botTrustRequest,
@@ -759,6 +764,12 @@ export default memo(
     } = selectTabState(global);
 
     const { wasTimeFormatSetManually } = selectSharedSettings(global);
+    const allChatsWithLastMsg = Object.entries(chats.byId).map(
+      ([chatId, chat]) => ({
+        chat,
+        lastMessage: selectChatLastMessage(global, chatId),
+      }),
+    );
 
     const gameMessage =
       openedGame &&
@@ -831,6 +842,8 @@ export default memo(
       isSynced: global.isSynced,
       isAccountFrozen,
       isAppConfigLoaded: global.isAppConfigLoaded,
+      chats,
+      allChatsWithLastMsg,
     };
   })(Main),
 );
