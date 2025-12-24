@@ -13,7 +13,6 @@ import { init as initClient } from './client';
 import * as methods from './index';
 
 export function initApi(_onUpdate: OnApiUpdate, initialArgs: ApiInitialArgs, initialLocalDb?: LocalDb) {
-  console.error('api initialized');
   initUpdateEmitter(_onUpdate);
 
   if (initialLocalDb) updateFullLocalDb(initialLocalDb);

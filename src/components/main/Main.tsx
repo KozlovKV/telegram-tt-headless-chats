@@ -20,7 +20,7 @@ import type {
   ApiUser,
   ApiUserFullInfo,
 } from '../../api/types';
-import type { TabState } from '../../global/types';
+import type { GlobalState, TabState } from '../../global/types';
 
 import { BASE_EMOJI_KEYWORD_LANG, DEBUG, INACTIVE_MARKER } from '../../config';
 import { requestNextMutation } from '../../lib/fasterdom/fasterdom';
@@ -113,8 +113,6 @@ import SnapEffectContainer from './visualEffects/SnapEffectContainer';
 import WaveContainer from './visualEffects/WaveContainer';
 
 import './Main.scss';
-import { callApi } from '../../api/gramjs/methods/init';
-import { Chats } from '../../lib/gramjs/tl/api';
 
 export interface OwnProps {
   isMobile?: boolean;
@@ -168,7 +166,7 @@ type StateProps = {
   isSynced?: boolean;
   isAccountFrozen?: boolean;
   isAppConfigLoaded?: boolean;
-  chats: Chats;
+  chats: GlobalState['chats'];
   allChatsWithLastMsg?: { chat: ApiChat; lastMessage?: ApiMessage }[];
 };
 
@@ -290,6 +288,7 @@ const Main = ({
     loadContentSettings,
     signOut,
     openChat,
+    reset,
   } = getActions();
 
   if (DEBUG && !DEBUG_isLogged) {
@@ -351,6 +350,7 @@ const Main = ({
     if (isMasterTab && isSynced && isAppConfigLoaded && !isAccountFrozen) {
       loadAllChats({ listType: 'saved' });
       loadAllChats({ listType: 'active' });
+      loadAllChats({ listType: 'archived' });
       loadAllStories();
       loadAllHiddenStories();
       loadContentSettings();
@@ -481,7 +481,9 @@ const Main = ({
     }
   });
 
+  // NOTE: Установка хэндлеров для обработки запросов от таури
   useTauriEvent<string>('telegram-request://open-chat', (e) => {
+    // eslint-disable-next-line no-console
     console.log('Opening', e.payload);
     if (!e.payload) return;
     openChat({ id: e.payload, shouldReplaceHistory: true });
@@ -489,43 +491,44 @@ const Main = ({
 
   useTauriEvent('telegram-request://chats', async () => {
     try {
-      console.log(chats);
-      console.log('chats: ', allChatsWithLastMsg);
-      console.log('filtered chats: ', allChatsWithLastMsg?.filter((val) => val.lastMessage));
-      const response = await callApi('fetchChats', { limit: 500 });
-      console.log('fetched', response);
       if (!currentUser?.id) {
         await emit('telegram-response://chats', 'unauthorized');
         return;
       }
       await emit('telegram-response://chats', allChatsWithLastMsg);
     } catch (err) {
-      console.error('Failed to get chats:', err);
+      // eslint-disable-next-line no-console
+      console.error('Failed to emit telegram-response://chats :', err);
     }
   });
 
   // TODO: проверить, что нормально обновляется юзер
   useTauriEvent('telegram-request://me', async () => {
     try {
-      console.log('Current user', currentUser);
+      // eslint-disable-next-line no-console
+      console.log('Current user', currentUser, currentUserFullInfo);
       if (!currentUser?.id) {
         await emit('telegram-response://me', 'unauthorized');
         return;
       }
       await emit('telegram-response://me', {
-        main: currentUser,
-        additional: currentUserFullInfo,
+        ...currentUser,
+        ...currentUserFullInfo,
       });
     } catch (err) {
-      console.error('Fail with user data:', err);
+      // eslint-disable-next-line no-console
+      console.error('Failed to emit telegram-response://me :', err);
     }
   });
 
   useTauriEvent('telegram-request://signout', () => {
+    // eslint-disable-next-line no-console
     console.log('Signing out');
     signOut();
     window.location.href = '/';
   });
+
+  // ================================================================================
 
   useEffect(() => {
     const parsedLocationHash = parseLocationHash(currentUserId);
@@ -672,8 +675,8 @@ const Main = ({
 
   return (
     <div ref={containerRef} id="Main" className={className}>
-      {/* Убрать следующий компонент чтобы не было основного меню */}
-      <LeftColumn ref={leftColumnRef} />
+      {/* NOTE: Убрать следующий компонент чтобы не было основного меню */}
+      {/* <LeftColumn ref={leftColumnRef} /> */}
       <MiddleColumn leftColumnRef={leftColumnRef} isMobile={isMobile} />
       <RightColumn isMobile={isMobile} />
       <MediaViewer isOpen={isMediaViewerOpen} />
@@ -764,12 +767,16 @@ export default memo(
     } = selectTabState(global);
 
     const { wasTimeFormatSetManually } = selectSharedSettings(global);
-    const allChatsWithLastMsg = Object.entries(chats.byId).map(
-      ([chatId, chat]) => ({
-        chat,
+    const allChatsWithLastMsg = [
+      ...(chats.listIds.active?.map((chatId) => ({
+        chat: chats.byId[chatId],
         lastMessage: selectChatLastMessage(global, chatId),
-      }),
-    );
+      })) ?? []),
+      ...(chats.listIds.archived?.map((chatId) => ({
+        chat: chats.byId[chatId],
+        lastMessage: selectChatLastMessage(global, chatId),
+      })) ?? []),
+    ];
 
     const gameMessage =
       openedGame &&

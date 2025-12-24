@@ -538,6 +538,7 @@ addActionHandler('loadAllChats', async (global, actions, payload): Promise<void>
     await loadChats(
       listType,
       true,
+      false, // NOTE: Может влиять на загрузку всех чатов сразу
     );
 
     if (!isCallbackFired) {
