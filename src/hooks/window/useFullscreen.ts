@@ -71,7 +71,7 @@ export default function useFullscreen<T extends HTMLElement>(elRef: ElementRef<T
         element.removeEventListener('webkitendfullscreen', listenerExit, false);
       }
     };
-    // eslint-disable-next-line
+     
   }, []);
 
   if (!prop && !IS_IOS) {

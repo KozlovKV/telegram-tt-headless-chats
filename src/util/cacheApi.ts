@@ -71,7 +71,7 @@ export async function fetch(
         return undefined;
     }
   } catch (err) {
-    // eslint-disable-next-line no-console
+     
     console.warn(err);
     return undefined;
   }
@@ -94,7 +94,7 @@ export async function save(cacheName: string, key: string, data: AnyLiteral | Bl
 
     return true;
   } catch (err) {
-    // eslint-disable-next-line no-console
+     
     console.warn(err);
     return false;
   }
@@ -109,7 +109,7 @@ export async function remove(cacheName: string, key: string) {
     const cache = await cacheApi.open(`${cacheName}${SUFFIX}`);
     return await cache.delete(key);
   } catch (err) {
-    // eslint-disable-next-line no-console
+     
     console.warn(err);
     return undefined;
   }
@@ -123,7 +123,7 @@ export async function clear(cacheName: string) {
 
     return await cacheApi.delete(`${cacheName}${SUFFIX}`);
   } catch (err) {
-    // eslint-disable-next-line no-console
+     
     console.warn(err);
     return undefined;
   }

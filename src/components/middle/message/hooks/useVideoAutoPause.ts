@@ -64,7 +64,7 @@ function usePlayPause(mediaRef: ElementRef<HTMLMediaElement>) {
           shouldPauseRef.current = false;
         }
       }).catch((e) => {
-        // eslint-disable-next-line no-console
+         
         console.warn(e);
       });
     }

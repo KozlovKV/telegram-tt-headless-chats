@@ -15,7 +15,7 @@ export default function useTauriEvent<T>(name: string, callback: (event: Event<T
     const setUpListener = async () => {
       const { getCurrentWindow } = await import('@tauri-apps/api/window');
       const window = getCurrentWindow();
-      // eslint-disable-next-line no-console
+       
       console.log('setting up', name);
 
       unlisten = await window.listen<T>(name, (event) => {
@@ -24,12 +24,12 @@ export default function useTauriEvent<T>(name: string, callback: (event: Event<T
     };
 
     setUpListener().catch((error) => {
-      // eslint-disable-next-line no-console
+       
       console.error(`Could not set up window event listener. ${error}`);
     });
 
     return () => {
-      // eslint-disable-next-line no-console
+       
       console.log('unlisten', name);
       unlisten?.();
     };

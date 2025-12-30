@@ -491,7 +491,7 @@ class TelegramClient {
 
         lastPongAt = Date.now();
       } catch (err) {
-        // eslint-disable-next-line no-console
+         
         console.warn(err);
 
         lastPongAt = undefined;
@@ -597,7 +597,7 @@ class TelegramClient {
     }
 
     if (this._shouldDebugExportedSenders) {
-      // eslint-disable-next-line no-console
+       
       console.log(`🧹 Cleanup idx=${index} dcId=${dcId}`);
     }
     const sender = await this._exportedSenderPromises[dcId][index];
@@ -709,7 +709,7 @@ class TelegramClient {
         }
 
         if (this._shouldDebugExportedSenders) {
-          // eslint-disable-next-line no-console
+           
           console.warn(
             `✅ Connected to exported sender idx=${index} dc=${dcId}`,
           );
@@ -718,10 +718,10 @@ class TelegramClient {
         return sender;
       } catch (err: any) {
         if (this._shouldDebugExportedSenders) {
-          // eslint-disable-next-line no-console
+           
           console.error(`☠️ ERROR! idx=${index} dcId=${dcId} ${err.message}`);
         }
-        // eslint-disable-next-line no-console
+         
         console.error(err);
 
         await sleep(1000);
@@ -746,7 +746,7 @@ class TelegramClient {
 
       this._exportedSenderReleaseTimeouts[dcId][index] = setTimeout(() => {
         if (this._shouldDebugExportedSenders) {
-          // eslint-disable-next-line no-console
+           
           console.log(`[CC] [idx=${index} dcId=${dcId}] 🚪 Release`);
         }
         sender.disconnect();
@@ -776,7 +776,7 @@ class TelegramClient {
 
     if (!this._exportedSenderPromises[dcId][i] || shouldReconnect) {
       if (this._shouldDebugExportedSenders) {
-        // eslint-disable-next-line no-console
+         
         console.warn(
           `🕒 Connecting to exported sender idx=${i} dc=${dcId}` +
           ` ${shouldReconnect ? '(reconnect)' : ''}`,
@@ -804,7 +804,7 @@ class TelegramClient {
         }
       }
     } catch (err) {
-      // eslint-disable-next-line no-console
+       
       console.error(err);
 
       return this._borrowExportedSender(dcId, true, undefined, i, isPremium);
@@ -1249,7 +1249,7 @@ class TelegramClient {
           }
         } catch (err) {
           if (err instanceof FloodWaitError) {
-            // eslint-disable-next-line no-console
+             
             console.warn(
               `getWebFile: sleeping for ${err.seconds}s on flood wait`,
             );

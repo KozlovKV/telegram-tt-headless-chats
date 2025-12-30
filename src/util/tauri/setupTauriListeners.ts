@@ -84,7 +84,7 @@ async function openLink(url: string | URL) {
       await shellPlugin.open(urlObject.toString());
     }
   } catch (e) {
-    // eslint-disable-next-line no-console
+     
     console.error('Failed to open link:', url, e);
   }
 }

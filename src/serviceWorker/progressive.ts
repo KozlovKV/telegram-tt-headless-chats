@@ -71,7 +71,7 @@ export async function respondForProgressive(e: FetchEvent) {
     ? await fetchFromCache(accountSlot, cacheKey) : [];
 
   if (DEBUG) {
-    // eslint-disable-next-line no-console
+     
     console.log(
       `FETCH PROGRESSIVE ${cacheKey} (request: ${start}-${originalEnd}) CACHED: ${Boolean(cachedArrayBuffer)}`,
     );
@@ -90,7 +90,7 @@ export async function respondForProgressive(e: FetchEvent) {
     partInfo = await requestPart(e, { url, start, end });
   } catch (err) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.error('FETCH PROGRESSIVE', err);
     }
   }

@@ -53,7 +53,7 @@ function checkIfPushSupported() {
 
   if (!('showNotification' in ServiceWorkerRegistration.prototype)) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn('[PUSH] Push notifications aren\'t supported.');
     }
     return false;
@@ -62,7 +62,7 @@ function checkIfPushSupported() {
   // If permission is denied, it is blocked until the user manually changes their settings
   if (Notification.permission === 'denied') {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn('[PUSH] The user has blocked push notifications.');
     }
     return false;
@@ -71,7 +71,7 @@ function checkIfPushSupported() {
   // Check if push messaging is supported
   if (!('PushManager' in window)) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn('[PUSH] Push messaging isn\'t supported.');
     }
     return false;
@@ -84,7 +84,7 @@ export function checkIfNotificationsSupported() {
   // Let's check if the browser supports notifications
   if (!('Notification' in window)) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn('[PUSH] This browser does not support desktop notification');
     }
     return false;
@@ -92,7 +92,7 @@ export function checkIfNotificationsSupported() {
 
   if (Notification.permission === 'denied') {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn('[PUSH] The user has blocked push notifications.');
     }
     return false;
@@ -127,7 +127,7 @@ export async function playNotifySound(id?: string, volume?: number) {
     await notificationSound.play();
   } catch (error) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn('[PUSH] Unable to play notification sound');
     }
   }
@@ -177,7 +177,7 @@ async function unsubscribeFromPush(subscription: PushSubscription | null) {
       return;
     } catch (error) {
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.log('[PUSH] Unable to unsubscribe from push.', error);
       }
     }
@@ -247,7 +247,7 @@ export async function subscribe() {
     });
     const deviceToken = getDeviceToken(subscription);
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.log('[PUSH] Received push subscription: ', deviceToken);
     }
     await callApi('registerDevice', deviceToken);
@@ -261,7 +261,7 @@ export async function subscribe() {
       // to manually change the notification permission to
       // subscribe to push messages
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.warn('[PUSH] The user has blocked push notifications.');
       }
     } else {
@@ -269,7 +269,7 @@ export async function subscribe() {
       // often be down to an issue or lack of the gcm_sender_id
       // and / or gcm_user_visible_only
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.log('[PUSH] Unable to subscribe to push.', error);
       }
       // Request permissions and fall back to local notifications

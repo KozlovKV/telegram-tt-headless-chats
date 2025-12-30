@@ -102,7 +102,7 @@ export function updateChannelState(channelId: string, pts: number) {
   const channel = localDb.chats[channelId];
   if (!(channel instanceof GramJs.Channel)) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.error(`[UpdateManager] Channel ${channelId} not found in localDb`);
     }
     return;
@@ -320,7 +320,7 @@ async function getChannelDifference(channelId: string) {
   const channel = localDb.chats[channelId];
   if (!channel || !(channel instanceof GramJs.Channel) || !channel.accessHash || !localDb.channelPtsById[channelId]) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.error('[UpdateManager] Channel for difference not found', channelId, channel);
     }
     return;
@@ -335,7 +335,7 @@ async function getChannelDifference(channelId: string) {
 
   if (!response) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn('[UpdatesManager] Failed to get ChannelDifference', channelId, channel);
     }
     return;

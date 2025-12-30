@@ -68,7 +68,7 @@ export class MP4Demuxer {
 
     this.file = MP4Box.createFile();
     this.file.onError = (e) => {
-      // eslint-disable-next-line no-console
+       
       console.error(e);
     };
     this.file.onReady = this.onReady.bind(this);
@@ -83,7 +83,7 @@ export class MP4Demuxer {
       try {
         offset = await this.requestPart(offset, META_PART_SIZE);
       } catch (e) {
-        // eslint-disable-next-line no-console
+         
         console.error(e);
       }
       if (this.status === Status.ready) break;
@@ -104,7 +104,7 @@ export class MP4Demuxer {
         }
         rap = this.file.seek(tick, true);
       } catch (e) {
-        // eslint-disable-next-line no-console
+         
         console.error(e);
       }
     }

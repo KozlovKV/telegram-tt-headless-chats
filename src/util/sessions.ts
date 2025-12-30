@@ -140,7 +140,7 @@ function loadStoredLegacySession(): ApiSessionData | undefined {
       }
     } catch (err) {
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.warn('Failed to load stored session', err);
       }
       // Do nothing.
@@ -179,7 +179,7 @@ export function importTestSession() {
     storeLegacySession(sessionData, sessionData.userId);
   } catch (err) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn('Failed to load test session', err);
     }
   }

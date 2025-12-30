@@ -16,7 +16,7 @@ let OpusRecorder: IOpusRecorder;
 let mediaRecorder: IOpusRecorder;
 
 export async function init() {
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+   
   if (!opusRecorderPromise) {
     opusRecorderPromise = import('opus-recorder');
     OpusRecorder = (await opusRecorderPromise).default;

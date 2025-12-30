@@ -43,7 +43,7 @@ const useVoiceRecording = () => {
 
       setActiveVoiceRecording({ stop, pause });
     } catch (err) {
-      // eslint-disable-next-line no-console
+       
       console.error(err);
     }
   });
@@ -62,7 +62,7 @@ const useVoiceRecording = () => {
     try {
       return activeVoiceRecording.pause();
     } catch (err) {
-      // eslint-disable-next-line no-console
+       
       console.error(err);
       return undefined;
     }
@@ -86,7 +86,7 @@ const useVoiceRecording = () => {
     try {
       return activeVoiceRecording.stop();
     } catch (err) {
-      // eslint-disable-next-line no-console
+       
       console.error(err);
       return undefined;
     }

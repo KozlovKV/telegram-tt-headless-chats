@@ -36,7 +36,7 @@ export async function loadBundle<B extends Bundles>(bundleName: B) {
         break;
       case Bundles.Main:
         if (DEBUG) {
-          // eslint-disable-next-line no-console
+           
           console.log('>>> START LOAD MAIN BUNDLE');
         }
 

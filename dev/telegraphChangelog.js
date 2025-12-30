@@ -45,7 +45,7 @@ async function updateTelegraph(dom) {
     author_name: 'Web A team',
     author_url: 'https://t.me/webachannel',
   });
-  // eslint-disable-next-line no-console
+   
   console.log(result);
 }
 

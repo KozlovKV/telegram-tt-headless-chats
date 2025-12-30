@@ -131,7 +131,7 @@ const LeftMain: FC<OwnProps> = ({
 
         await window.tauri?.relaunch();
       } catch (e) {
-        // eslint-disable-next-line no-console
+         
         console.error('Failed to download and install Tauri update', e);
       } finally {
         setIsTauriUpdateDownloading(false);
@@ -171,7 +171,7 @@ const LeftMain: FC<OwnProps> = ({
     window.tauri?.checkUpdate()
       .then((update) => setTauriUpdate(update ?? undefined))
       .catch((e) => {
-        // eslint-disable-next-line no-console
+         
         console.error('Tauri update check failed:', e);
       });
   });

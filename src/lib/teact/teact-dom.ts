@@ -539,7 +539,7 @@ function renderFastListChildren(
     if (DEBUG && isParentElement($newChild)) {
       // eslint-disable-next-line no-null/no-null
       if (key === undefined || key === null) {
-        // eslint-disable-next-line no-console
+         
         console.warn('Missing `key` in `teactFastList`');
       }
 
@@ -944,7 +944,7 @@ function DEBUG_checkKeyUniqueness(children: VirtualElementChildren) {
     }, []);
 
     if (keys.length !== unique(keys).length) {
-      // eslint-disable-next-line no-console
+       
       console.warn('[Teact] Duplicated keys:', keys.filter((e, i, a) => a.indexOf(e) !== i), children);
       throw new Error('[Teact] Children keys are not unique');
     }

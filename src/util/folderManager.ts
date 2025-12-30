@@ -280,7 +280,7 @@ function updateFolderManager(global: GlobalState) {
   if (DEBUG) {
     const duration = performance.now() - DEBUG_startedAt!;
     if (duration > DEBUG_DURATION_LIMIT) {
-      // eslint-disable-next-line no-console
+       
       console.warn(`Slow \`updateFolderManager\`: ${Math.round(duration)} ms`);
     }
   }

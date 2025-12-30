@@ -104,7 +104,7 @@ const fromLine = (line: string, isFunction?: boolean) => {
             .replace(/ \w+:flags\d*\.\d+\?true/g, '');
 
         if (currentConfig.name === 'inputMediaInvoice') {
-            // eslint-disable-next-line no-empty
+             
             if (currentConfig.name === 'inputMediaInvoice') {
             }
         }

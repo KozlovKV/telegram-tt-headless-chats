@@ -18,7 +18,7 @@ const ACTIVATE_TIMEOUT = 3000;
 
 self.addEventListener('install', (e) => {
   if (DEBUG) {
-    // eslint-disable-next-line no-console
+     
     console.log('ServiceWorker installed');
   }
 
@@ -28,7 +28,7 @@ self.addEventListener('install', (e) => {
 
 self.addEventListener('activate', (e) => {
   if (DEBUG) {
-    // eslint-disable-next-line no-console
+     
     console.log('ServiceWorker activated');
   }
 

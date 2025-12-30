@@ -71,7 +71,7 @@ const PollAnswerResults: FC<OwnProps & StateProps> = ({
         chat, messageId: message.id, option, offset, limit: INITIAL_LIMIT, shouldResetVoters: true,
       });
     }
-    // eslint-disable-next-line
+     
   }, [answerVote.votersCount, areVotersLoaded]);
 
   const handleViewMoreClick = useCallback(() => {

@@ -56,7 +56,7 @@ function getPushData(e: PushEvent | Notification): PushData | undefined {
     return e.data.json();
   } catch (error) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.log('[SW] Unable to parse push notification data', e.data);
     }
     return undefined;
@@ -167,10 +167,10 @@ async function closeNotifications({
 
 export function handlePush(e: PushEvent) {
   if (DEBUG) {
-    // eslint-disable-next-line no-console
+     
     console.log('[SW] Push received event', e);
     if (e.data) {
-      // eslint-disable-next-line no-console
+       
       console.log('[SW] Push received with data', e.data.json());
     }
   }
@@ -203,7 +203,7 @@ async function focusChatMessage(client: WindowClient, data: FocusMessageData) {
       await client.focus();
     } catch (error) {
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.warn('[SW] ', error);
       }
     }
@@ -232,7 +232,7 @@ export function handleNotificationClick(e: NotificationEvent) {
       }
     } catch (error) {
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.warn('[SW] ', error);
       }
     }
@@ -243,7 +243,7 @@ export function handleNotificationClick(e: NotificationEvent) {
 
 export function handleClientMessage(e: ExtendableMessageEvent) {
   if (DEBUG_MORE) {
-    // eslint-disable-next-line no-console
+     
     console.log('[SW] New message from client', e);
   }
   if (!e.data) return;

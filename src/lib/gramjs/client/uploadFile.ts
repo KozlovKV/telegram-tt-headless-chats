@@ -46,7 +46,7 @@ export async function uploadFile(
 
   const logWithId = (...args: any[]) => {
     if (!shouldDebugExportedSenders) return;
-    // eslint-disable-next-line no-console
+     
     console.log(`⬆️ [${fileId.toString()}]`, ...args);
   };
 

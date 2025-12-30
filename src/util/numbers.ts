@@ -7,7 +7,7 @@ export function toJSNumber(value?: bigint): number | undefined {
   if (value === undefined) return undefined;
 
   if (DEBUG && (value < Number.MIN_SAFE_INTEGER || value > Number.MAX_SAFE_INTEGER)) {
-    // eslint-disable-next-line no-console
+     
     console.error('Unsafe BigInt conversion', value);
   }
 
@@ -19,7 +19,7 @@ export function tryParseBigInt(value: string): bigint | undefined {
     return BigInt(value);
   } catch (error) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.error('Error parsing BigInt', value, error);
     }
     return undefined;

@@ -212,7 +212,7 @@ function updateContainers() {
 
     if (DEBUG) {
       if (Object.values(newMappedProps).some(Number.isNaN)) {
-        // eslint-disable-next-line no-console
+         
         console.warn(
           // eslint-disable-next-line @stylistic/max-len
           `[TeactN] Some of \`${container.DEBUG_componentName}\` mappers contain NaN values. This may cause redundant updates because of incorrect equality check.`,
@@ -239,7 +239,7 @@ function updateContainers() {
   if (DEBUG) {
     const updateTime = performance.now() - DEBUG_startAt!;
     if (updateTime > 7) {
-      // eslint-disable-next-line no-console
+       
       console.warn(`[TeactN] Slow containers update: ${Math.round(updateTime)} ms`);
     }
   }
@@ -383,7 +383,7 @@ if (DEBUG) {
   (window as any).getActions = getUntypedActions;
 
   document.addEventListener('dblclick', () => {
-    // eslint-disable-next-line no-console
+     
     console.warn(
       'GLOBAL CONTAINERS',
       orderBy(

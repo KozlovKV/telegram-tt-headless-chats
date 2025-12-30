@@ -41,7 +41,7 @@ addActionHandler('loadAllStories', async (global): Promise<void> => {
   while (global.stories.hasNext) {
     if (i++ >= INFINITE_LOOP_MARKER) {
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.error('`actions/loadAllStories`: Infinite loop detected');
       }
 
@@ -83,7 +83,7 @@ addActionHandler('loadAllHiddenStories', async (global): Promise<void> => {
   while (global.stories.hasNextInArchive) {
     if (i++ >= INFINITE_LOOP_MARKER) {
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.error('`actions/loadAllHiddenStories`: Infinite loop detected');
       }
 

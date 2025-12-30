@@ -287,7 +287,7 @@ const DEBUG_memos: Record<string, { key: string; calls: number; misses: number; 
 const DEBUG_MEMOS_CALLS_THRESHOLD = 20;
 
 document.addEventListener('dblclick', () => {
-  // eslint-disable-next-line no-console
+   
   console.warn('COMPONENTS', orderBy(
     Object
       .values(DEBUG_components)
@@ -298,7 +298,7 @@ document.addEventListener('dblclick', () => {
     'desc',
   ));
 
-  // eslint-disable-next-line no-console
+   
   console.warn('MEMOS', orderBy(
     Object
       .values(DEBUG_memos)
@@ -423,7 +423,7 @@ export function renderComponent(componentInstance: ComponentInstance) {
 
       if (DEBUG_MORE) {
         if (!DEBUG_SILENT_RENDERS_FOR.has(componentName)) {
-          // eslint-disable-next-line no-console
+           
           console.log(`[Teact] Render ${componentName}`);
         }
       }
@@ -437,7 +437,7 @@ export function renderComponent(componentInstance: ComponentInstance) {
       const duration = performance.now() - DEBUG_startAt!;
       const componentName = DEBUG_resolveComponentName(Component);
       if (duration > DEBUG_RENDER_THRESHOLD) {
-        // eslint-disable-next-line no-console
+         
         console.warn(`[Teact] Slow component render: ${componentName}, ${Math.round(duration)} ms`);
       }
 
@@ -453,7 +453,7 @@ export function renderComponent(componentInstance: ComponentInstance) {
     }
   }, {
     rescue: () => {
-      // eslint-disable-next-line no-console
+       
       console.error(`[Teact] Error while rendering component ${componentInstance.name}`, componentInstance);
 
       newRenderedValue = componentInstance.renderedValue;
@@ -631,7 +631,7 @@ export function useState<T>(initial?: T | (() => T), debugKey?: string): [T, Sta
         runUpdatePassOnRaf();
 
         if (DEBUG_MORE) {
-          // eslint-disable-next-line no-console
+           
           console.log(
             '[Teact.useState]',
             DEBUG_resolveComponentName(componentInstance.Component),
@@ -685,7 +685,7 @@ function useEffectBase(
           return res;
         }, []);
 
-        // eslint-disable-next-line no-console
+         
         console.log(`[Teact] Effect "${debugKey}" caused by dependencies.`, causedBy.join(', '));
       }
 
@@ -693,7 +693,7 @@ function useEffectBase(
     }
   } else {
     if (debugKey) {
-      // eslint-disable-next-line no-console
+       
       console.log(`[Teact] Effect "${debugKey}" caused by missing dependencies.`);
     }
 
@@ -703,7 +703,7 @@ function useEffectBase(
   function setupSignals() {
     const cleanups = dependencies?.filter(isSignal).map((signal, i) => signal.subscribe(() => {
       if (debugKey) {
-        // eslint-disable-next-line no-console
+         
         console.log(`[Teact] Effect "${debugKey}" caused by signal #${i} new value:`, signal());
       }
 
@@ -765,7 +765,7 @@ function scheduleEffect(
         const duration = performance.now() - DEBUG_startAt!;
         const componentName = DEBUG_resolveComponentName(componentInstance.Component);
         if (duration > DEBUG_EFFECT_THRESHOLD) {
-          // eslint-disable-next-line no-console
+           
           console.warn(
             `[Teact] Slow cleanup at effect cursor #${cursor}: ${componentName}, ${Math.round(duration)} ms`,
           );
@@ -773,7 +773,7 @@ function scheduleEffect(
       }
     }, {
       rescue: () => {
-        // eslint-disable-next-line no-console
+         
         console.error(`[Teact] Error in effect cleanup at cursor #${cursor} in ${componentInstance.name}`,
           componentInstance);
       },
@@ -804,13 +804,13 @@ function scheduleEffect(
       const duration = performance.now() - DEBUG_startAt!;
       const componentName = DEBUG_resolveComponentName(componentInstance.Component);
       if (duration > DEBUG_EFFECT_THRESHOLD) {
-        // eslint-disable-next-line no-console
+         
         console.warn(`[Teact] Slow effect at cursor #${cursor}: ${componentName}, ${Math.round(duration)} ms`);
       }
     }
   }, {
     rescue: () => {
-      // eslint-disable-next-line no-console
+       
       console.error(`[Teact] Error in effect at cursor #${cursor} in ${componentInstance.name}`, componentInstance);
     },
   });
@@ -889,7 +889,7 @@ export function useMemo<T>(
       if (debugKey) {
         const msg = `[Teact.useMemo] ${renderingInstance.name} (${debugKey}): Update is caused by:`;
         if (!byCursor[cursor]) {
-          // eslint-disable-next-line no-console
+           
           console.log(`${msg} [first render]`);
         } else {
           logUnequalProps(byCursor[cursor].dependencies, dependencies, msg, debugKey);
@@ -905,7 +905,7 @@ export function useMemo<T>(
           && DEBUG_state.calls >= DEBUG_MEMOS_CALLS_THRESHOLD
           && DEBUG_state.hitRate < 0.25
         ) {
-          // eslint-disable-next-line no-console
+           
           console.warn(
 
             `[Teact] ${DEBUG_state.key}: Hit rate is ${DEBUG_state.hitRate.toFixed(2)} for ${DEBUG_state.calls} calls`,

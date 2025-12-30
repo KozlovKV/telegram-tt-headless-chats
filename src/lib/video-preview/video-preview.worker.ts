@@ -17,7 +17,7 @@ function init(
 ) {
   const hasWebCodecs = 'VideoDecoder' in globalThis;
   if (!hasWebCodecs) {
-    // eslint-disable-next-line no-console
+     
     console.log('[Video Preview] WebCodecs not supported');
     return new Promise<void>((resolve) => {
       onDestroy = resolve;
@@ -40,7 +40,7 @@ function init(
       frame.close();
     },
     error(e: any) {
-      // eslint-disable-next-line no-console
+       
       console.error('[Video Preview] error', e);
     },
   });

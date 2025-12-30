@@ -104,7 +104,7 @@ export function initApi(onUpdate: OnApiUpdate, initialArgs: ApiInitialArgs) {
 
   if (!worker) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.log('>>> START LOAD WORKER');
     }
 
@@ -158,7 +158,7 @@ export function initApi(onUpdate: OnApiUpdate, initialArgs: ApiInitialArgs) {
       localApiRequestsQueue = [];
     })
     .catch((err) => {
-      // eslint-disable-next-line no-console
+       
       console.error(err);
     });
 }
@@ -332,7 +332,7 @@ function subscribeToWorker(onUpdate: OnApiUpdate) {
         if (DEBUG) {
           const duration = performance.now() - DEBUG_startAt!;
           if (duration > 5) {
-            // eslint-disable-next-line no-console
+             
             console.warn(
               `[API] Slow updates processing: ${payload.updates.length} updates in ${duration} ms`,
             );
@@ -498,7 +498,7 @@ async function ensureWorkerPing() {
       ),
     ]);
   } catch (err) {
-    // eslint-disable-next-line no-console
+     
     console.error(err);
 
     if (Date.now() - startedAt >= HEALTH_CHECK_MIN_DELAY) {

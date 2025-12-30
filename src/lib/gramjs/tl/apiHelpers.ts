@@ -8,7 +8,7 @@ import schemeContent from './schemaTl';
 
 import { toSignedLittleBuffer } from '../Helpers';
 
-// eslint-disable-next-line no-restricted-globals
+ 
 const CACHING_SUPPORTED = typeof self !== 'undefined' && self.localStorage !== undefined;
 
 const CACHE_KEY = 'GramJs:apiCache';

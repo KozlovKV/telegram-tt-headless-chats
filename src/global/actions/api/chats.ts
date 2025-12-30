@@ -522,7 +522,7 @@ addActionHandler('loadAllChats', async (global, actions, payload): Promise<void>
   while (!global.chats.isFullyLoaded[listType]) {
     if (i++ >= INFINITE_LOOP_MARKER) {
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.error('`actions/loadAllChats`: Infinite loop detected');
       }
 

@@ -150,7 +150,7 @@ export function clearCaching() {
 
 async function readCache(initialState: GlobalState): Promise<GlobalState> {
   if (DEBUG) {
-    // eslint-disable-next-line no-console
+     
     console.time('global-state-cache-read');
   }
 
@@ -170,7 +170,7 @@ async function readCache(initialState: GlobalState): Promise<GlobalState> {
   }
 
   if (DEBUG) {
-    // eslint-disable-next-line no-console
+     
     console.timeEnd('global-state-cache-read');
   }
 
@@ -194,7 +194,7 @@ export function migrateCache(cached: GlobalState, initialState: GlobalState) {
   try {
     unsafeMigrateCache(cached, initialState);
   } catch (err) {
-    // eslint-disable-next-line no-console
+     
     console.error(err);
   }
 }

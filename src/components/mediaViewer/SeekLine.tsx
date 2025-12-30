@@ -124,7 +124,7 @@ const SeekLine: FC<OwnProps> = ({
         onUpdate: setSelectedTime,
       });
     }
-    // eslint-disable-next-line
+     
   }, [isPlaying, playbackRate, duration]);
 
   useLayoutEffect(() => {

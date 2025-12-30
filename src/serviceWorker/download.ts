@@ -35,7 +35,7 @@ export async function respondForDownload(e: FetchEvent) {
     partInfo = await requestPart(e, { url, start: 0, end: TEST_PART_SIZE });
   } catch (err) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.error('FETCH DOWNLOAD', err);
     }
   }

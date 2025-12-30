@@ -102,7 +102,7 @@ function appendBuffer(sourceBuffer: SourceBuffer, buffer: ArrayBuffer) {
     sourceBuffer.appendBuffer(buffer);
   } catch (error) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn('[Stream] failed to append buffer', error);
     }
   }
@@ -113,7 +113,7 @@ function endOfStream(mediaSource: MediaSource) {
     mediaSource.endOfStream();
   } catch (error) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn('[Stream] failed to end stream', error);
     }
   }

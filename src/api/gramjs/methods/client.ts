@@ -76,7 +76,7 @@ let currentUserId: string | undefined;
 
 export async function init(initialArgs: ApiInitialArgs, onConnected?: NoneToVoidFunction) {
   if (DEBUG) {
-    // eslint-disable-next-line no-console
+     
     console.log('>>> START INIT API');
   }
 
@@ -141,7 +141,7 @@ export async function init(initialArgs: ApiInitialArgs, onConnected?: NoneToVoid
         accountIds,
       }, onConnected);
     } catch (err: any) {
-      // eslint-disable-next-line no-console
+       
       console.error(err);
 
       if (err.message !== 'Disconnect' && err.message !== 'Cannot send requests while disconnected') {
@@ -155,7 +155,7 @@ export async function init(initialArgs: ApiInitialArgs, onConnected?: NoneToVoid
     }
 
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.log('>>> FINISH INIT API');
       log('CONNECTED');
     }
@@ -306,9 +306,9 @@ export async function invokeRequest<T extends GramJs.AnyRequest>(
     if (shouldIgnoreErrors) return undefined;
     if (DEBUG) {
       log('INVOKE ERROR', request.className);
-      // eslint-disable-next-line no-console
+       
       console.debug('invokeRequest failed with payload', request);
-      // eslint-disable-next-line no-console
+       
       console.error(err);
     }
 
@@ -352,7 +352,7 @@ export async function downloadMedia(
     if (err instanceof RPCError) {
       if (err.errorMessage.startsWith('FILE_REFERENCE')) {
         if (DEBUG) {
-          // eslint-disable-next-line no-console
+           
           console.warn('Trying to repair file reference', args.url);
         }
         const isFileReferenceRepaired = await repairFileReference({ url: args.url });
@@ -361,14 +361,14 @@ export async function downloadMedia(
         }
 
         if (DEBUG) {
-          // eslint-disable-next-line no-console
+           
           console.error('Failed to repair file reference', args.url);
         }
       }
 
       if (err.errorMessage === 'FILE_ID_INVALID' && args.url.includes('avatar')) {
         if (DEBUG) {
-          // eslint-disable-next-line no-console
+           
           console.warn('Inaccessible avatar image', args.url);
         }
         return undefined;
@@ -376,7 +376,7 @@ export async function downloadMedia(
     }
 
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.error('Failed to download media', args.url, err);
     }
 

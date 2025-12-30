@@ -63,7 +63,7 @@ export function fetch<T extends ApiMediaFormat>(
     const promise = fetchFromCacheOrRemote(url, mediaFormat, isHtmlAllowed)
       .catch((err) => {
         if (DEBUG) {
-          // eslint-disable-next-line no-console
+           
           console.warn(err);
         }
 
@@ -160,7 +160,7 @@ async function fetchFromCacheOrRemote(
     await new Promise((resolve) => {
       setTimeout(resolve, getRetryTimeout(retryNumber));
     });
-    // eslint-disable-next-line no-console
+     
     if (DEBUG) console.debug(`Retrying to fetch media ${url}`);
     return fetchFromCacheOrRemote(url, mediaFormat, isHtmlAllowed, retryNumber + 1);
   }
@@ -217,7 +217,7 @@ if (IS_PROGRESSIVE_SUPPORTED) {
       if (!result) {
         if (retryNumber >= MAX_MEDIA_RETRIES) {
           if (DEBUG) {
-            // eslint-disable-next-line no-console
+             
             console.warn(`Failed to download media part after ${MAX_MEDIA_RETRIES} retries:`, params.url);
           }
           return undefined;
@@ -226,7 +226,7 @@ if (IS_PROGRESSIVE_SUPPORTED) {
           setTimeout(resolve, getRetryTimeout(retryNumber));
         });
         if (DEBUG) {
-          // eslint-disable-next-line no-console
+           
           console.debug(`Retrying to download media part ${params.url}, attempt ${retryNumber + 1}`);
         }
         return downloadWithRetry(retryNumber + 1);

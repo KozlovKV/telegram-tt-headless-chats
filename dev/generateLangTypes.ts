@@ -34,7 +34,7 @@ const pluralTypes = formatKeyWithVariables(true, pluralKeysWithVars);
 const text = `${TOP_COMMENT}\n${regularTypes}\n${pluralTypes}${LANG_KEY_TYPE}\n`;
 writeFileSync('./src/types/language.d.ts', text, 'utf8');
 
-// eslint-disable-next-line no-console
+ 
 console.log(`Language types generated
 ${Object.keys(regularKeysWithVars).length} simple keys
 ${Object.keys(pluralKeysWithVars).length} plural keys

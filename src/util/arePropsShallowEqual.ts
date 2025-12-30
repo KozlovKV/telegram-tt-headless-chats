@@ -31,16 +31,16 @@ export function logUnequalProps(currentProps: AnyLiteral, newProps: AnyLiteral, 
   const newKeysLength = Object.keys(newProps).length;
 
   if (currentKeysLength !== newKeysLength) {
-    // eslint-disable-next-line no-console
+     
     console.log(`${msg} LENGTH`);
     return;
   }
 
-  // eslint-disable-next-line no-console
+   
   console.log(msg);
   currentKeys.forEach((prop) => {
     if (currentProps[prop] !== newProps[prop]) {
-      // eslint-disable-next-line no-console
+       
       console.log(debugKey, prop, ':', currentProps[prop], '=>', newProps[prop]);
     }
   });

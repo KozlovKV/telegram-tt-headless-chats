@@ -15,7 +15,7 @@ declare const self: WorkerGlobalScope;
 const callbackState = new Map<string, CancellableCallback>();
 
 type ApiConfig =
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+   
   ((name: string, ...args: any[]) => any | [any, ArrayBuffer[]])
   | Record<string, AnyFunction>;
 type SendToOrigin = (data: WorkerPayload, transferables?: Transferable[]) => void;
@@ -128,7 +128,7 @@ function onMessage(
           }
         } catch (error: any) {
           if (DEBUG) {
-            // eslint-disable-next-line no-console
+             
             console.error(error);
           }
 
@@ -166,13 +166,13 @@ function isTransferable(obj: any) {
 
 function handleErrors(sendToOrigin: SendToOrigin) {
   self.onerror = (e) => {
-    // eslint-disable-next-line no-console
+     
     console.error(e);
     sendToOrigin({ type: 'unhandledError', error: { message: e.error.message || 'Uncaught exception in worker' } });
   };
 
   self.addEventListener('unhandledrejection', (e) => {
-    // eslint-disable-next-line no-console
+     
     console.error(e);
     sendToOrigin({ type: 'unhandledError', error: { message: e.reason.message || 'Uncaught rejection in worker' } });
   });

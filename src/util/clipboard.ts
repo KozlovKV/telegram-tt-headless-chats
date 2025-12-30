@@ -117,7 +117,7 @@ async function copyBlobToClipboard(pngBlob: Blob | null) {
     ]);
   } catch (error) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.error(error);
     }
   }

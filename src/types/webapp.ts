@@ -97,7 +97,7 @@ interface WebAppInboundEventMap {
   web_app_device_storage_save_key: {
     req_id: string;
     key: string;
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+     
     value: unknown | null;
   };
   web_app_device_storage_get_key: {
@@ -110,7 +110,7 @@ interface WebAppInboundEventMap {
   web_app_secure_storage_save_key: {
     req_id: string;
     key: string;
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+     
     value: unknown | null;
   };
   web_app_secure_storage_get_key: {

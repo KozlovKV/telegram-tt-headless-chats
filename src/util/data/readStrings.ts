@@ -7,12 +7,12 @@ export default function readStrings(data: string): Record<string, string> {
     if (!line.startsWith('"')) continue;
     const [key, value] = parseLine(line) || [];
     if (!key || !value) {
-      // eslint-disable-next-line no-console
+       
       console.warn('Bad formatting in line:', line);
       continue;
     }
     if (result[key]) {
-      // eslint-disable-next-line no-console
+       
       console.warn('Duplicate key:', key);
     }
     result[key] = value;
@@ -54,7 +54,7 @@ function parseLine(line: string) {
     return [key, value];
   } catch (e) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.error('Error parsing line:', line, e);
     }
   }

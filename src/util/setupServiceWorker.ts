@@ -16,7 +16,7 @@ const IGNORE_WORKER_PATH = '/k/';
 function handleWorkerMessage(e: MessageEvent) {
   const action: WorkerAction = e.data;
   if (DEBUG_MORE) {
-    // eslint-disable-next-line no-console
+     
     console.log('[SW] Message from worker', action);
   }
   if (!action.type) return;
@@ -54,7 +54,7 @@ if (IS_SERVICE_WORKER_SUPPORTED) {
         const ourRegistrations = registrations.filter((r) => !r.scope.includes(IGNORE_WORKER_PATH));
         if (ourRegistrations.length) {
           if (DEBUG) {
-            // eslint-disable-next-line no-console
+             
             console.log('[SW] Hard reload detected, re-enabling Service Worker');
           }
           await Promise.all(ourRegistrations.map((r) => r.unregister()));
@@ -64,7 +64,7 @@ if (IS_SERVICE_WORKER_SUPPORTED) {
       await navigator.serviceWorker.register(new URL('../serviceWorker', import.meta.url));
 
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.log('[SW] ServiceWorker registered');
       }
 
@@ -75,13 +75,13 @@ if (IS_SERVICE_WORKER_SUPPORTED) {
 
       if (navigator.serviceWorker.controller) {
         if (DEBUG) {
-          // eslint-disable-next-line no-console
+           
           console.log('[SW] ServiceWorker ready');
         }
         subscribeToWorker();
       } else {
         if (DEBUG) {
-          // eslint-disable-next-line no-console
+           
           console.error('[SW] ServiceWorker not available');
         }
 
@@ -91,7 +91,7 @@ if (IS_SERVICE_WORKER_SUPPORTED) {
       }
     } catch (err) {
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.error('[SW] ServiceWorker registration failed: ', err);
       }
     }

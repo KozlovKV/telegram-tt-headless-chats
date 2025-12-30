@@ -28,7 +28,7 @@ type BOwnProps = Pick<GlobalState, 'authState'> & {
 };
 
 const TestB: FC<BStateProps & BOwnProps> = ({ bValue, aValue, derivedAValue }) => {
-  // eslint-disable-next-line no-console
+   
   console.log('!!! B MOUNT ', { bValue, aValue, derivedAValue });
 
   return (
@@ -60,7 +60,7 @@ const TestB: FC<BStateProps & BOwnProps> = ({ bValue, aValue, derivedAValue }) =
 
 const TestBContainer = withGlobal<BOwnProps>(
   (global, { aValue }): BStateProps => {
-    // eslint-disable-next-line no-console
+     
     console.log('!!! B MAP', { aValue });
 
     return {
@@ -72,7 +72,7 @@ const TestBContainer = withGlobal<BOwnProps>(
 )(TestB);
 
 const TestA: FC<AStateProps> = ({ aValue }) => {
-  // eslint-disable-next-line no-console
+   
   console.log('!!! A MOUNT ', { aValue });
 
   return (
@@ -91,7 +91,7 @@ const TestA: FC<AStateProps> = ({ aValue }) => {
 export default withGlobal(
   (global): AStateProps => {
     // @ts-ignore
-    // eslint-disable-next-line no-console
+     
     console.log('!!! A MAP', { aValue: global.aValue });
 
     return {

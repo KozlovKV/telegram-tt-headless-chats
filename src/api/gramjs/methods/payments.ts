@@ -141,7 +141,7 @@ export async function sendStarPaymentForm({
 
   if (result instanceof GramJs.payments.PaymentVerificationNeeded) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn('Unexpected PaymentVerificationNeeded in sendStarsForm');
     }
 

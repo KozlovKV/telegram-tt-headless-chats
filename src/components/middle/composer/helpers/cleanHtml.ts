@@ -12,7 +12,7 @@ export function preparePastedHtml(html: string) {
     html = cleanDocsHtml(html);
   } catch (err) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.error(err);
     }
   }

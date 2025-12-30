@@ -527,7 +527,7 @@ export async function handleUpdateGroupCallParticipants(updatedParticipants: Gro
 
     updateGroupCallStreams(myId);
     if (state.updatingParticipantsQueue.length > 0) {
-      // eslint-disable-next-line no-restricted-syntax
+       
       for (const newConference of state.updatingParticipantsQueue) {
         await connection.setRemoteDescription({
           type: 'offer',

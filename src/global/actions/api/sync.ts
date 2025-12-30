@@ -46,7 +46,7 @@ let releaseStatusTimeout: number | undefined;
 
 addActionHandler('sync', (global, actions): ActionReturnType => {
   if (DEBUG) {
-    // eslint-disable-next-line no-console
+     
     console.log('>>> START SYNC');
   }
 
@@ -87,7 +87,7 @@ addActionHandler('sync', (global, actions): ActionReturnType => {
       setGlobal(global);
 
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.log('>>> FINISH SYNC');
       }
 

@@ -430,7 +430,7 @@ export function sendApiMessage(
         media = await uploadMedia(localMessage, attachment, onProgress!);
       } catch (err) {
         if (DEBUG) {
-          // eslint-disable-next-line no-console
+           
           console.warn(err);
         }
 
@@ -592,7 +592,7 @@ function sendGroupedMedia(
       media = await uploadMedia(localMessage, attachment, onProgress!);
     } catch (err) {
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.warn(err);
       }
 
@@ -614,7 +614,7 @@ function sendGroupedMedia(
       groupedUploads[groupedId].counter--;
 
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.warn('Failed to upload grouped media');
       }
 
@@ -760,7 +760,7 @@ export async function editMessage({
     }), { shouldThrow: true });
   } catch (err) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn(err);
     }
 
@@ -824,7 +824,7 @@ export async function editTodo({
     }), { shouldThrow: true });
   } catch (err) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn(err);
     }
 
@@ -872,7 +872,7 @@ export async function appendTodoList({
     }), { shouldThrow: true });
   } catch (err) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn(err);
     }
 
@@ -1225,7 +1225,7 @@ export async function sendMessageAction({
   const mtpAction = buildSendMessageAction(action);
   if (!mtpAction) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn('Unsupported message action', action);
     }
     return undefined;

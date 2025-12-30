@@ -102,7 +102,7 @@ async function loadFallbackPack() {
 async function fetchDifference() {
   if (!langPack || !language) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn('[Localization] Trying to fetch difference without loaded data');
     }
     return;
@@ -175,7 +175,7 @@ function createFormatters() {
       }),
     };
   } catch (e) {
-    // eslint-disable-next-line no-console
+     
     console.warn('Failed to create formatters:', e);
     formatters = {
       pluralRules: new Intl.PluralRules(FORMATTERS_FALLBACK_LANG),
@@ -249,7 +249,7 @@ export async function loadAndChangeLanguage(langCode: string, shouldCheckCache?:
 
   if (!remoteLanguage) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.warn('Failed to fetch language', langCode);
     }
     return undefined;
@@ -280,7 +280,7 @@ export async function changeLanguage(newLanguage: ApiLanguage) {
       langCode: newLanguage.langCode,
     });
     if (!remoteLangPack) {
-      // eslint-disable-next-line no-console
+       
       console.warn('Failed to fetch lang pack');
       return;
     }

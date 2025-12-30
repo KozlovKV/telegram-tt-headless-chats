@@ -788,7 +788,7 @@ addActionHandler('checkAppVersion', (global): ActionReturnType => {
     })
     .catch((err) => {
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.error('[checkAppVersion failed] ', err);
       }
     });

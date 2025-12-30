@@ -68,9 +68,9 @@ export function sortReactions<T extends ApiAvailableReaction | ApiReactionWithPa
   topReactions?: ApiReactionWithPaid[],
 ): T[] {
   return reactions.slice().sort((left, right) => {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- TS Bug?
+     
     const reactionOne = left ? ('reaction' in left ? left.reaction : left as ApiReactionWithPaid) : undefined;
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- TS Bug?
+     
     const reactionTwo = right ? ('reaction' in right ? right.reaction : right as ApiReactionWithPaid) : undefined;
 
     if (reactionOne?.type === 'paid') return -1;

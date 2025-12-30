@@ -47,7 +47,7 @@ const CardInput: FC<OwnProps> = ({ value, error, onChange, isActive }) => {
   useEffect(() => {
     const newCardType = detectCardType(value);
     setCardType(newCardType);
-  // eslint-disable-next-line
+   
   }, []);
 
   const handleChange = useCallback((e) => {

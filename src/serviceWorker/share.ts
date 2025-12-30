@@ -18,7 +18,7 @@ export async function respondForShare(e: FetchEvent) {
       const data = parseFormData(formData);
       requestShare(data, e.resultingClientId);
     } catch (err) {
-      // eslint-disable-next-line no-console
+       
       console.warn('[SHARE] Failed to parse input data', err);
     }
   }

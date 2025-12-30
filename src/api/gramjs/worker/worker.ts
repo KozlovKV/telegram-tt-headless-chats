@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 
 import type { DebugLevel } from '../../../util/debugConsole';
 import type { ApiOnProgress, ApiUpdate } from '../../types';

@@ -36,7 +36,7 @@ const throttleError = throttle((err) => {
 }, 1500);
 
 export function handleError(err: Error) {
-  // eslint-disable-next-line no-console
+   
   console.error(err);
   if (DEBUG) {
     throttleError(err);

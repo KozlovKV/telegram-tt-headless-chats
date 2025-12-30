@@ -268,7 +268,7 @@ export default class MTProtoSender {
     return (...args: unknown[]) => {
       if (!this._getShouldDebugExportedSenders
         || !this._getShouldDebugExportedSenders()) return;
-      // eslint-disable-next-line no-console
+       
       console[level](`[${this._isExported ? `idx=${this._senderIndex} ` : 'M '}dcId=${this._dcId}]`, ...args);
     };
   }
@@ -322,7 +322,7 @@ export default class MTProtoSender {
           this._updateCallback?.(new UpdateConnectionState(UpdateConnectionState.disconnected));
         }
         this._log.error(`${this._isFallback ? 'HTTP' : 'WebSocket'} connection failed attempt: ${attempt + 1}`);
-        // eslint-disable-next-line no-console
+         
         console.error(err);
         await sleep(this._delay);
       }

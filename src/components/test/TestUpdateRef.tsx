@@ -7,11 +7,11 @@ function TestUpdateRef() {
 
   useEffect(() => {
     // Input content should preserve, but ref should clean up
-    // eslint-disable-next-line no-console
+     
     console.log('!!!', inputRef.current);
 
     // Ref should update
-    // eslint-disable-next-line no-console
+     
     console.log('!!!', headingRef.current);
   }, [isShown]);
 

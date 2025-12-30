@@ -24,7 +24,7 @@ const fastTextPromise = fasttextInitializer({
 }).then((fastText: FastTextMethods) => {
   fastTextInstance = fastText;
   if (DEBUG) {
-    // eslint-disable-next-line no-console
+     
     console.log('[FASTTEXT] Worker ready');
   }
 });

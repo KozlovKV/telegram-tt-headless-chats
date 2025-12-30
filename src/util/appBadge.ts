@@ -17,7 +17,7 @@ export function updateAppBadge(unreadCount: number, isMuted?: boolean) {
 
   window.navigator.setAppBadge(unreadCount).catch((err) => {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.error(err);
     }
   });

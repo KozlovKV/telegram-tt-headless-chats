@@ -23,7 +23,7 @@ const useModuleLoader = <B extends Bundles, M extends BundleModules<B>>(
   useEffect(() => {
     if (!noLoad && !module) {
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.log('Module load triggered', bundleName, moduleName);
       }
       loadModule(bundleName).then(forceUpdate);

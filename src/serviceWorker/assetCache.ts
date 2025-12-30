@@ -56,7 +56,7 @@ async function withTimeout<T>(cb: () => Promise<T>, timeout: number) {
       cb(),
     ]);
   } catch (err) {
-    // eslint-disable-next-line no-console
+     
     console.error(err);
     return undefined;
   } finally {

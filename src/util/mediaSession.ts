@@ -39,7 +39,7 @@ export function registerMediaSession(metadata?: MediaMetadata, handlers?: MediaS
     if (metadata) updateMetadata(metadata);
     if (handlers) setMediaSessionHandlers(handlers);
   } else {
-    // eslint-disable-next-line no-console
+     
     console.warn('MediaSession API not supported in this browser');
   }
 }

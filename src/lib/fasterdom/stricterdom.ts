@@ -6,7 +6,7 @@ type Phase =
   | 'mutate';
 type ErrorHandler = (error: Error) => any;
 
-// eslint-disable-next-line no-console
+ 
 const DEFAULT_ERROR_HANDLER = console.error;
 
 let onError: ErrorHandler = DEFAULT_ERROR_HANDLER;

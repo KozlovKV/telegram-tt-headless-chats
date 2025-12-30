@@ -52,7 +52,7 @@ const OutlinedMicrophoneIcon: FC<OwnProps> = ({
     // }
 
     return isMuted ? [22, 23] : [43, 44];
-    // eslint-disable-next-line
+     
   }, [isMuted, shouldRaiseHand, isRaiseHand]);
 
   const microphoneColor: string = useMemo(() => {

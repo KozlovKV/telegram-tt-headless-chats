@@ -68,7 +68,7 @@ export default class Logger {
       return;
     }
     if (this.canSend(level)) {
-      // eslint-disable-next-line no-console
+       
       console.log(this.colors.start + this.format(message, level), color);
     }
   }

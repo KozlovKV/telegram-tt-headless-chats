@@ -23,7 +23,7 @@ export async function setupPasscode(passcode: string) {
 
 export async function encryptSession(sessionJson?: string, globalJson?: string) {
   if (!currentPasscodeHash) {
-    // eslint-disable-next-line no-console
+     
     console.error('[api/passcode] Missing current passcode');
     throw new Error('[api/passcode] Missing current passcode');
   }
@@ -46,7 +46,7 @@ export async function encryptSession(sessionJson?: string, globalJson?: string) 
 
 export async function decryptSessionByCurrentHash() {
   if (!currentPasscodeHash) {
-    // eslint-disable-next-line no-console
+     
     console.error('[api/passcode] Missing current passcode');
     throw new Error('[api/passcode] Missing current passcode');
   }
@@ -57,7 +57,7 @@ export async function decryptSessionByCurrentHash() {
   ]);
 
   if (!sessionEncrypted || !globalEncrypted) {
-    // eslint-disable-next-line no-console
+     
     console.error('[api/passcode] Missing required stored fields');
     throw new Error('[api/passcode] Missing required stored fields');
   }
@@ -70,7 +70,7 @@ export async function decryptSessionByCurrentHash() {
 
     return { sessionJson, globalJson };
   } catch (err) {
-    // eslint-disable-next-line no-console
+     
     console.error('[api/passcode] Error decrypting session', err);
     throw err;
   }
@@ -85,7 +85,7 @@ export async function decryptSession(passcode: string) {
   ]);
 
   if (!sessionEncrypted || !globalEncrypted) {
-    // eslint-disable-next-line no-console
+     
     console.error('[api/passcode] Missing required stored fields');
     throw new UnrecoverablePasscodeError('[api/passcode] Missing required stored fields');
   }
@@ -100,7 +100,7 @@ export async function decryptSession(passcode: string) {
 
     return { sessionJson, globalJson };
   } catch (err) {
-    // eslint-disable-next-line no-console
+     
     console.error('[api/passcode] Error decrypting session', err);
     throw err;
   }

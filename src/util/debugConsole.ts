@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 
 export const DEBUG_LEVELS = ['log', 'error', 'warn', 'info', 'debug'] as const;
 export type DebugLevel = typeof DEBUG_LEVELS[number];

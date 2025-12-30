@@ -152,7 +152,7 @@ async function signInUser(
   let isRegistrationRequired = false;
   let termsOfService;
 
-  // eslint-disable-next-line no-constant-condition
+   
   while (1) {
     try {
       try {
@@ -189,14 +189,14 @@ async function signInUser(
       } else if (err instanceof Error) {
         authParams.onError(err);
       } else {
-        // eslint-disable-next-line no-console
+         
         console.warn('Unexpected error:', err);
       }
     }
   }
 
   if (isRegistrationRequired) {
-    // eslint-disable-next-line no-constant-condition
+     
     while (1) {
       try {
         const [firstName, lastName] = await authParams.firstAndLastNames();
@@ -236,7 +236,7 @@ async function signInUserWithQrCode(
   const exceptIds = authParams.accountIds?.map((id) => tryParseBigInt(id)).filter(Boolean) || [];
 
   const inputPromise = (async () => {
-    // eslint-disable-next-line no-constant-condition
+     
     while (1) {
       if (isScanningComplete) {
         break;
@@ -311,7 +311,7 @@ async function signInUserWithQrCode(
   }
 
   // This is a workaround for TypeScript (never actually reached)
-  // eslint-disable-next-line @typescript-eslint/only-throw-error
+   
   throw undefined;
 }
 
@@ -367,7 +367,7 @@ async function sendCode(
 async function signInWithPassword(
   client: TelegramClient, apiCredentials: ApiCredentials, authParams: UserAuthParams, noReset = false,
 ): Promise<Api.TypeUser> {
-  // eslint-disable-next-line no-constant-condition
+   
   while (1) {
     try {
       const passwordSrpResult = await client.invoke(new Api.account.GetPassword());

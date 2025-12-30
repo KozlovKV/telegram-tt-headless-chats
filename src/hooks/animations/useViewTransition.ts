@@ -78,7 +78,7 @@ export function useViewTransition(): ViewTransitionController {
       isReady = true;
       setTransitionState('animating');
     }).catch((e: unknown) => {
-      // eslint-disable-next-line no-console
+       
       console.error('View transition error', e, types?.getTypes());
       setTransitionState('skipped');
       requestMutation(() => {
@@ -109,7 +109,7 @@ export function useViewTransition(): ViewTransitionController {
     }
 
     if (hasActiveTransition) {
-      // eslint-disable-next-line no-console
+       
       console.warn('VT skipped because another transition is already active', types.getTypes());
       updateCallback?.();
       return;

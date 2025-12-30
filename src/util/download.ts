@@ -45,7 +45,7 @@ function downloadOne({ url, filename }: PendingDownload) {
   try {
     link.click();
   } catch (err) {
-    // eslint-disable-next-line no-console
+     
     console.error(err); // Suppress redundant "Blob loading failed" error popup on IOS
   }
 }

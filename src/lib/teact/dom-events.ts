@@ -175,7 +175,7 @@ if (DEBUG) {
     const delegatedEventTypesCount = Array.from(delegatedEventTypesByElement.values())
       .reduce((acc, eventTypes) => acc + eventTypes.size, 0);
 
-    // eslint-disable-next-line no-console
+     
     console.warn('DELEGATED EVENTS STATS', {
       delegatedHandlersCount1,
       delegatedHandlersCount2,

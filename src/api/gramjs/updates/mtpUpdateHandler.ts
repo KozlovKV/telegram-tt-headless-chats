@@ -143,7 +143,7 @@ export function updater(update: Update) {
       // TODO Remove if proven not reproducing
       if (mtpMessage instanceof GramJs.MessageEmpty) {
         if (DEBUG) {
-          // eslint-disable-next-line no-console
+           
           console.error('Unexpected update:', update.className, update);
         }
 
@@ -329,7 +329,7 @@ export function updater(update: Update) {
     // TODO Remove if proven not reproducing
     if (mtpMessage instanceof GramJs.MessageEmpty) {
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.error('Unexpected update:', update.className, update);
       }
 

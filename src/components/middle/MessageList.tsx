@@ -147,15 +147,15 @@ type StateProps = {
 };
 
 enum Content {
-  // eslint-disable-next-line @typescript-eslint/no-shadow
+   
   Loading,
   Restricted,
   StarsRequired,
   PremiumRequired,
   AccountInfo,
-  // eslint-disable-next-line @typescript-eslint/no-shadow
+   
   ContactGreeting,
-  // eslint-disable-next-line @typescript-eslint/no-shadow
+   
   NoMessages,
   MessageList,
 }
@@ -186,7 +186,7 @@ const MessageList: FC<OwnProps & StateProps> = ({
   canPost,
   isSynced,
   isActive,
-  // eslint-disable-next-line @typescript-eslint/no-shadow
+   
   isChatMonoforum,
   isReady,
   isChatWithSelf,
@@ -550,7 +550,7 @@ const MessageList: FC<OwnProps & StateProps> = ({
   // Handles updated message list, takes care of scroll repositioning
   useLayoutEffectWithPrevDeps(([prevMessageIds, prevIsViewportNewest]) => {
     if (process.env.APP_ENV === 'perf') {
-      // eslint-disable-next-line no-console
+       
       console.time('scrollTop');
     }
 
@@ -675,7 +675,7 @@ const MessageList: FC<OwnProps & StateProps> = ({
         }
 
         if (process.env.APP_ENV === 'perf') {
-          // eslint-disable-next-line no-console
+           
           console.timeEnd('scrollTop');
         }
       };

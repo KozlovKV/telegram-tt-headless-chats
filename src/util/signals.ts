@@ -7,7 +7,7 @@ interface SignalState<T> {
   effects: CallbackManager;
 }
 
-const SIGNAL_MARK = Symbol('SIGNAL_MARK');
+export const SIGNAL_MARK = Symbol('SIGNAL_MARK');
 
 export type Signal<T = unknown> = ((() => T) & {
   readonly [SIGNAL_MARK]: symbol;

@@ -9,7 +9,7 @@ const Test: FC = () => {
 
   function removeVowels(e: React.FormEvent<HTMLInputElement>) {
     const nextValue = e.currentTarget.value.replace(/[aeiou]/g, '');
-    // eslint-disable-next-line no-console
+     
     console.log('!!!', { nextValue });
     setInputValue(nextValue);
   }

@@ -14,7 +14,7 @@ type StateProps = Pick<GlobalState, 'authState'> & {
 let lastTimeout: number | undefined;
 
 const Test: FC<StateProps> = ({ authState, globalRand }) => {
-  // eslint-disable-next-line no-console
+   
   console.log('rendering `Test`', authState, globalRand);
 
   const [ownRand, setOwnRand] = useState(0);

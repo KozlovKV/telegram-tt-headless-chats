@@ -101,7 +101,7 @@ function requestPictureInPicture(video: HTMLVideoElement) {
       video.requestPictureInPicture();
     } catch (err) {
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.log('[MV] PictureInPicture Error', err);
       }
     }
@@ -114,7 +114,7 @@ export function exitPictureInPictureIfNeeded() {
       document.exitPictureInPicture();
     } catch (err) {
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.log('[MV] PictureInPicture Error', err);
       }
     }

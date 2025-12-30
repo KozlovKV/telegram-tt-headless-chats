@@ -42,7 +42,7 @@ export interface OriginMessageEvent {
   data: OriginMessageData;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+ 
 export type ApiUpdate = { type: string } & any;
 
 export type WorkerPayload =

@@ -10,7 +10,7 @@ type StateProps = {
 };
 
 const ErrorTest: FC<OwnProps & StateProps> = ({ parentRand, globalRand }) => {
-  // eslint-disable-next-line no-console
+   
   console.log('rendering `ErrorTest`');
 
   if (!parentRand || parentRand > 0.8) {

@@ -852,7 +852,7 @@ export async function createChannel({
   // Errors are added to catch unexpected cases in future testing
   if (!(result instanceof GramJs.Updates)) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.error('Unexpected channel creation update', result);
     }
     return undefined;
@@ -861,7 +861,7 @@ export async function createChannel({
   const newChannel = result.chats[0];
   if (!newChannel || !(newChannel instanceof GramJs.Channel)) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.error('Created channel not found', result);
     }
     return undefined;
@@ -966,7 +966,7 @@ export async function createGroupChat({
   const newChat = (invitedUsers.updates as GramJs.Updates).chats[0];
   if (!newChat || !(newChat instanceof GramJs.Chat)) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.error('Created chat not found', invitedUsers.updates);
     }
     return undefined;
@@ -1499,7 +1499,7 @@ export async function migrateChat(chat: ApiChat) {
   // Errors are added to catch unexpected cases in future testing
   if (!result || !(result instanceof GramJs.Updates)) {
     if (DEBUG) {
-      // eslint-disable-next-line no-console
+       
       console.error('Unexpected channel creation update', result);
     }
 

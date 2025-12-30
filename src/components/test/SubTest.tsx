@@ -9,7 +9,7 @@ type OwnProps = {
 };
 
 const SubTest: FC<OwnProps> = ({ authState, parentRand }) => {
-  // eslint-disable-next-line no-console
+   
   console.log('rendering `SubTest`', authState, parentRand);
 
   const [value, setValue] = useState(0);

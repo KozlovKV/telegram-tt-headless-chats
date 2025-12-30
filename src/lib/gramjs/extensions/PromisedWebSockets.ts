@@ -103,7 +103,7 @@ export default class PromisedWebSockets {
         if (timeout) clearTimeout(timeout);
       };
       this.client.onerror = (error) => {
-        // eslint-disable-next-line no-console
+         
         console.error('WebSocket error', error);
         reject(error);
         hasResolved = true;
@@ -112,7 +112,7 @@ export default class PromisedWebSockets {
       this.client.onclose = (event) => {
         const { code, reason, wasClean } = event;
         if (code !== 1000) {
-          // eslint-disable-next-line no-console
+           
           console.error(`Socket ${ip} closed. Code: ${code}, reason: ${reason}, was clean: ${wasClean}`);
         }
 

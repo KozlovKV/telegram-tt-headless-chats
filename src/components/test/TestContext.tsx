@@ -9,7 +9,7 @@ const TestingContext = createContext('default value');
 const ContextConsumer = ({ children, debugKey }: { children?: any; debugKey?: string }) => {
   const value = useContext(TestingContext);
   if (debugKey) {
-    // eslint-disable-next-line no-console
+     
     console.log(`ContextConsumer ${debugKey}`, value);
   }
   return (

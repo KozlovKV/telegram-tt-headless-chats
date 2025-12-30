@@ -293,7 +293,7 @@ const Main = ({
 
   if (DEBUG && !DEBUG_isLogged) {
     DEBUG_isLogged = true;
-    // eslint-disable-next-line no-console
+     
     console.log('>>> RENDER MAIN');
   }
 
@@ -475,7 +475,7 @@ const Main = ({
       processDeepLink(decodedUrl);
     } catch (e) {
       if (DEBUG) {
-        // eslint-disable-next-line no-console
+         
         console.error('Failed to process deep link', e);
       }
     }
@@ -483,7 +483,7 @@ const Main = ({
 
   // NOTE: Установка хэндлеров для обработки запросов от таури
   useTauriEvent<string>('telegram-request://open-chat', (e) => {
-    // eslint-disable-next-line no-console
+     
     console.log('Opening', e.payload);
     if (!e.payload) return;
     openChat({ id: e.payload, shouldReplaceHistory: true });
@@ -497,7 +497,7 @@ const Main = ({
       }
       await emit('telegram-response://chats', allChatsWithLastMsg);
     } catch (err) {
-      // eslint-disable-next-line no-console
+       
       console.error('Failed to emit telegram-response://chats :', err);
     }
   });
@@ -505,7 +505,7 @@ const Main = ({
   // TODO: проверить, что нормально обновляется юзер
   useTauriEvent('telegram-request://me', async () => {
     try {
-      // eslint-disable-next-line no-console
+       
       console.log('Current user', currentUser, currentUserFullInfo);
       if (!currentUser?.id) {
         await emit('telegram-response://me', 'unauthorized');
@@ -516,13 +516,13 @@ const Main = ({
         ...currentUserFullInfo,
       });
     } catch (err) {
-      // eslint-disable-next-line no-console
+       
       console.error('Failed to emit telegram-response://me :', err);
     }
   });
 
   useTauriEvent('telegram-request://signout', () => {
-    // eslint-disable-next-line no-console
+     
     console.log('Signing out');
     signOut();
     window.location.href = '/';
