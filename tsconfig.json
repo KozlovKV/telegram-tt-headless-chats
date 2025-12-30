@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     // We don't care about this since Webpack runs Babel after TypeScript
+    "outDir": "./raw-dist",
     "target": "esnext",
     "lib": [
       "dom",
@@ -33,6 +34,7 @@
     "tests",
     "plugins",
     "dev",
+    "scripts",
     "*.config.ts",
     "*.config.js",
     ".fantasticonrc.cjs",

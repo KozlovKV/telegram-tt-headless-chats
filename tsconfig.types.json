@@ -1,7 +1,6 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "esnext",
     "declaration": true,
     "emitDeclarationOnly": true,
     "outDir": "dist-types",
@@ -13,16 +12,6 @@
     "noEmit": false,
     "forceConsistentCasingInFileNames": true,
     "allowJs": false,
-    "baseUrl": "src/",
-    "rootDir": "src/",
-    // "moduleResolution": "node",
-    "jsx": "react-jsx",           // на случай, если типы используют JSX типы
-    "jsxImportSource": "@teact",
-    "lib": ["ESNext", "DOM", "WebWorker"],
-    "paths": {
-      "@teact": ["./src/lib/teact/teact.ts"],
-      "@teact/*": ["./src/lib/teact/*"]
-    }
   },
   "include": [
     "src/external-types.ts",
