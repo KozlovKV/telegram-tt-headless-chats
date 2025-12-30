@@ -1,4 +1,3 @@
-import type { API_CHAT_TYPES } from '../../config';
 import type { ApiBotInfo } from './bots';
 import type { ApiBusinessIntro, ApiBusinessLocation, ApiBusinessWorkHours } from './business';
 import type { ApiDocument, ApiPhoto } from './messages';
@@ -114,7 +113,7 @@ export interface ApiUsername {
   isEditable?: boolean;
 }
 
-export type ApiChatType = typeof API_CHAT_TYPES[number];
+export type ApiChatType = 'bots' | 'channels' | 'chats' | 'users' | 'groups';
 export type ApiAttachMenuPeerType = 'self' | ApiChatType;
 
 export type ApiInlineQueryPeerType = 'self' | 'supergroups' | ApiChatType;

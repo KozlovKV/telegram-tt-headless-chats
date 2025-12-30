@@ -22,7 +22,6 @@ const CONFIG = {
     'ExteranlApiChat',
     'ExteranlApiMessage',
     'ApiDimensions',
-    'API_CHAT_TYPES',
   ],
   // External modules to stub
   externalModules: {
