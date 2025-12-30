@@ -1,6 +1,6 @@
-/* eslint-disable no-console */
-import * as fs from 'fs';
-import * as path from 'path';
+ 
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import type {
   EnumDeclaration,
   InterfaceDeclaration,
@@ -17,10 +17,10 @@ const CONFIG = {
   entryPoint: 'src/external-types.ts',
   // Types to always include
   coreTypes: [
-    'ExteranlApiUser',
-    'ExteranlApiUserFullInfo',
-    'ExteranlApiChat',
-    'ExteranlApiMessage',
+    'ExternalApiUser',
+    'ExternalApiUserFullInfo',
+    'ExternalApiChat',
+    'ExternalApiMessage',
     'ApiDimensions',
   ],
   // External modules to stub
@@ -31,10 +31,10 @@ const CONFIG = {
 };
 
 class TypeExtractor {
-  private project: Project;
-  private sourceFiles: Map<string, SourceFile>;
-  private typeGraph: Map<string, Set<string>>;
-  private extractedTypes: Map<string, ExtractedType>;
+  private readonly project: Project;
+  private readonly sourceFiles: Map<string, SourceFile>;
+  private readonly typeGraph: Map<string, Set<string>>;
+  private readonly extractedTypes: Map<string, ExtractedType>;
 
   getTypeGraph() {
     return this.typeGraph;
@@ -86,37 +86,25 @@ class TypeExtractor {
       // Extract interfaces
       const interfaces = sourceFile.getInterfaces();
       for (const iface of interfaces) {
-        // if (this.shouldExtract(iface)) {
-        // console.log('[IFACE] ' + iface.getText());
         this.extractInterface(iface, filePath);
-        // }
       }
 
       // Extract type aliases
       const typeAliases = sourceFile.getTypeAliases();
       for (const alias of typeAliases) {
-        // if (this.shouldExtract(alias)) {
-        // console.log('[TYPE] ' + alias.getText());
         this.extractTypeAlias(alias, filePath);
-        // }
       }
 
       // Extract enums
       const enums = sourceFile.getEnums();
       for (const enumDecl of enums) {
-        // if (this.shouldExtract(enumDecl)) {
-        // console.log('[ENUM] ' + enumDecl.getText());
         this.extractTypeEnum(enumDecl, filePath);
-        // }
       }
 
       // Extract const assertions that act as enums
       const constVars = sourceFile.getVariableDeclarations();
       for (const varDecl of constVars) {
-        // if (this.isConstEnum(varDecl)) {
-        // console.log('[CONST] ' + varDecl.getText());
         this.extractConstEnum(varDecl, filePath);
-        // }
       }
     }
   }
@@ -146,9 +134,6 @@ class TypeExtractor {
   private extractTypeAlias(alias: TypeAliasDeclaration, filePath: string) {
     const name = alias.getName();
     const dependencies = this.findDependencies(alias);
-    if (name === 'ApiChatType' || name === 'ApiStarsAmount') {
-      console.log(name, dependencies, alias.getText());
-    }
 
     const extracted: ExtractedType = {
       name,
@@ -273,9 +258,9 @@ interface ExtractedType {
 }
 
 class DependencyResolver {
-  private visited = new Set<string>();
-  private resolved = new Set<string>();
-  private typeGraph: Map<string, Set<string>>;
+  private readonly visited = new Set<string>();
+  private readonly resolved = new Set<string>();
+  private readonly typeGraph: Map<string, Set<string>>;
 
   constructor(typeGraph: Map<string, Set<string>>) {
     this.typeGraph = typeGraph;
@@ -345,7 +330,7 @@ class DependencyResolver {
 }
 
 class ImportResolver {
-  private externalStubs = new Map<string, string>();
+  private readonly externalStubs = new Map<string, string>();
 
   constructor() {
     // Initialize external module stubs
@@ -372,7 +357,7 @@ class ImportResolver {
   private removeRuntimeImports(text: string): string {
     // Remove imports that are not type-only
     const importRegex = /^import\s+(?!type\s+).*$/gm;
-    return text.replace(importRegex, (match) => {
+    return text.replaceAll(importRegex, (match) => {
       // Check if this is a runtime import we should remove
       if (this.isRuntimeImport(match)) {
         return '// Runtime import removed: ' + match;
@@ -386,7 +371,7 @@ class ImportResolver {
     const typeImportRegex =
       /import\s+type\s+\{([^}]+)\}\s+from\s+['"]([^'"]+)['"]/g;
 
-    return text.replace(typeImportRegex, (match, imports, module) => {
+    return text.replaceAll(typeImportRegex, (match, imports, module) => {
       // If it's a relative import to another type file
       if (module.startsWith('./')) {
         // Keep the same relative structure
@@ -409,7 +394,7 @@ class ImportResolver {
   private stubExternalImports(text: string): string {
     for (const [module, stub] of this.externalStubs) {
       const regex = new RegExp(
-        `import\\s+type\\s+\\{([^}]+)\\}\\s+from\\s+['"]${module}['"]`,
+        String.raw`import\s+type\s+\{([^}]+)\}\s+from\s+['"]${module}['"]`,
         'g',
       );
       text = text.replace(regex, (match, types) => {
@@ -443,8 +428,8 @@ class ImportResolver {
 }
 
 class OutputGenerator {
-  private extractedTypes: Map<string, ExtractedType>;
-  private outputDir: string;
+  private readonly extractedTypes: Map<string, ExtractedType>;
+  private readonly outputDir: string;
 
   constructor(extractedTypes: Map<string, ExtractedType>, outputDir: string) {
     this.extractedTypes = extractedTypes;
@@ -559,7 +544,9 @@ class OutputGenerator {
     let result = '';
 
     for (const [file, types] of imports) {
-      const typeList = Array.from(types).sort().join(', ');
+      const typeList = Array.from(types)
+        .sort((a, b) => a.localeCompare(b))
+        .join(', ');
       result += `import type { ${typeList} } from './${file}';\n`;
     }
 

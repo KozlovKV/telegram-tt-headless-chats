@@ -1,6 +1,6 @@
 import type { ApiChat, ApiMessage, ApiUser, ApiUserFullInfo } from './api/types';
 
-export type ExteranlApiUser = ApiUser;
-export type ExteranlApiUserFullInfo = ApiUserFullInfo;
-export type ExteranlApiChat = ApiChat;
-export type ExteranlApiMessage = ApiMessage;
+export type ExternalApiUser = ApiUser;
+export type ExternalApiUserFullInfo = ApiUserFullInfo;
+export type ExternalApiChat = ApiChat;
+export type ExternalApiMessage = ApiMessage;
