@@ -1,0 +1,2 @@
+(self.webpackChunktelegram_tt_headless_chats=self.webpackChunktelegram_tt_headless_chats||[]).push([[7612],{20283:e=>{e.exports=function(e){return{aliases:["pycon"],contains:[{className:"meta.prompt",starts:{end:/ |$/,starts:{end:"$",subLanguage:"python"}},variants:[{begin:/^>>>(?=[ ]|$)/},{begin:/^\.\.\.(?=[ ]|$)/}]}]}}}}]);
+//# sourceMappingURL=7612.1d40e806a113bc8ae8b6.js.map

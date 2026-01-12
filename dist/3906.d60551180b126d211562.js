@@ -1,0 +1,2 @@
+(self.webpackChunktelegram_tt_headless_chats=self.webpackChunktelegram_tt_headless_chats||[]).push([[3906],{19601:e=>{e.exports=function(e){return{name:"Clojure REPL",contains:[{className:"meta.prompt",begin:/^([\w.-]+|\s*#_)?=>/,starts:{end:/$/,subLanguage:"clojure"}}]}}}}]);
+//# sourceMappingURL=3906.d60551180b126d211562.js.map

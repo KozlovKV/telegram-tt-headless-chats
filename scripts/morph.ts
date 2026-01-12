@@ -1,4 +1,5 @@
- 
+/* eslint-disable no-console */
+
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type {

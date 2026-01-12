@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunktelegram_tt_headless_chats=self.webpackChunktelegram_tt_headless_chats||[]).push([[2263],{82263:(e,s,a)=>{a.d(s,{relaunch:()=>c});var t=a(55962);async function c(){await(0,t.invoke)("plugin:process|restart")}}}]);
+//# sourceMappingURL=2263.80bc096360d011550724.js.map

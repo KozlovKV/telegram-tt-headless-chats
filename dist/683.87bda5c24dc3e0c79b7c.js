@@ -1,0 +1,2 @@
+(self.webpackChunktelegram_tt_headless_chats=self.webpackChunktelegram_tt_headless_chats||[]).push([[683],{8514:e=>{e.exports=function(e){return{name:"Julia REPL",contains:[{className:"meta.prompt",begin:/^julia>/,relevance:10,starts:{end:/^(?![ ]{6})/,subLanguage:"julia"}}],aliases:["jldoctest"]}}}}]);
+//# sourceMappingURL=683.87bda5c24dc3e0c79b7c.js.map

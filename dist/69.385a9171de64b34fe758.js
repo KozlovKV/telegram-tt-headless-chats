@@ -1,0 +1,2 @@
+(self.webpackChunktelegram_tt_headless_chats=self.webpackChunktelegram_tt_headless_chats||[]).push([[69],{67172:e=>{e.exports=function(e){return{name:"LDIF",contains:[{className:"attribute",match:"^dn(?=:)",relevance:10},{className:"attribute",match:"^\\w+(?=:)"},{className:"literal",match:"^-"},e.HASH_COMMENT_MODE]}}}}]);
+//# sourceMappingURL=69.385a9171de64b34fe758.js.map

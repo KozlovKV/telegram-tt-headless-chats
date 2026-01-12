@@ -1,5 +1,3 @@
-dist-types/
-dist/
 tauri/target/
 dist/build-stats.json
 public/build-stats.json
